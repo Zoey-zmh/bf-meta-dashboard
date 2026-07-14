@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>账户余量监测看板</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Microsoft YaHei',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;font-size:13px}
+/* ── Header ── */
+.hd{background:linear-gradient(135deg,#1a1f35,#0f1117);border-bottom:1px solid #2d3748;padding:18px 32px;display:flex;align-items:center;justify-content:space-between}
+.hd h1{font-size:19px;font-weight:700;color:#fff}
+.hd .sub{font-size:12px;color:#718096;margin-top:3px}
+.badge{background:#2d3748;color:#a0aec0;font-size:12px;padding:4px 12px;border-radius:12px}
+/* ── Layout ── */
+.wrap{max-width:1440px;margin:0 auto;padding:22px 32px}
+/* ── Tabs ── */
+.tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;align-items:center}
+.tab{padding:7px 18px;border-radius:20px;border:1px solid #2d3748;background:#1a202c;color:#a0aec0;cursor:pointer;font-size:13px;font-weight:500;transition:all .18s}
+.tab:hover{border-color:#4a5568;color:#e2e8f0}
+.tab.active{background:linear-gradient(135deg,#3b5bdb,#4c6ef5);border-color:#4c6ef5;color:#fff;box-shadow:0 2px 10px rgba(76,110,245,.3)}
+/* ── Summary cards ── */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.card{background:#1a202c;border:1px solid #2d3748;border-radius:10px;padding:18px 22px}
+.card .lbl{font-size:11px;color:#718096;margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
+.card .val{font-size:26px;font-weight:700}
+.card .sub{font-size:11px;color:#a0aec0;margin-top:4px}
+.c-blue .val{color:#63b3ed} .c-orange .val{color:#f6ad55}
+.c-green .val{color:#68d391} .c-purple .val{color:#b794f4}
+/* ── Section title ── */
+.sec{font-size:12px;font-weight:700;color:#a0aec0;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sec::after{content:'';flex:1;height:1px;background:#2d3748}
+.sec-btn{font-size:11px;font-weight:500;color:#4a5568;background:#1a202c;border:1px solid #2d3748;border-radius:12px;padding:3px 10px;cursor:pointer;text-transform:none;letter-spacing:0;transition:all .15s;white-space:nowrap}
+.sec-btn:hover{color:#a0aec0;border-color:#4a5568}
+/* ── Main table ── */
+.tbl{width:100%;border-collapse:collapse;margin-bottom:28px}
+.tbl thead th{
+  background:#141823;color:#718096;font-size:11px;font-weight:600;
+  text-transform:uppercase;padding:9px 12px;border-bottom:2px solid #2d3748;
+  letter-spacing:.4px;text-align:right;white-space:nowrap;position:sticky;top:0;z-index:2
+}
+.tbl thead th:first-child{text-align:left;padding-left:16px}
+/* ── Team rows ── */
+.t-row{cursor:pointer;border-left:3px solid transparent;transition:background .12s}
+.t-row td{
+  background:#161c2e;padding:10px 12px;border-bottom:1px solid #0f1117;
+  font-size:13px;font-weight:600;color:#e2e8f0;text-align:right;white-space:nowrap
+}
+.t-row td:first-child{text-align:left;padding-left:13px}
+.t-row:hover td{background:#1c2240}
+/* ── Salesperson rows ── */
+.s-row td{
+  background:#111520;padding:8px 12px;border-bottom:1px solid #0f1117;
+  font-size:12px;color:#9da9be;text-align:right;white-space:nowrap;
+  border-left:3px solid transparent
+}
+.s-row td:first-child{text-align:left;padding-left:32px}
+/* ── Progress ── */
+.prog{display:flex;align-items:center;gap:7px;justify-content:flex-end}
+.pbar{width:72px;height:5px;background:#2d3748;border-radius:3px;overflow:hidden;flex-shrink:0}
+.pfill{height:100%;border-radius:3px;transition:width .35s}
+.ppct{font-size:11px;min-width:36px;text-align:right}
+/* ── Share bar (salesperson) ── */
+.share{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.sbar{width:60px;height:4px;background:#2d3748;border-radius:2px;overflow:hidden;flex-shrink:0}
+.sfill{height:100%;background:#3b5bdb;border-radius:2px;transition:width .35s}
+.spct{font-size:11px;min-width:34px;text-align:right;color:#6b7fa0}
+/* ── WoW ── */
+.up{color:#68d391;font-size:11px} .dn{color:#fc8181;font-size:11px} .nc{color:#4a5568;font-size:11px}
+.over{color:#fc8181;font-weight:700}
+/* ── Toggle chevron ── */
+.chev{display:inline-block;margin-right:7px;font-size:10px;color:#4a5568;transition:transform .18s;vertical-align:middle}
+.t-row.collapsed .chev{transform:rotate(-90deg)}
+/* ── Analysis ── */
+.anl-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px}
+.anl-card{background:#1a202c;border:1px solid #2d3748;border-radius:10px;padding:18px 20px}
+.anl-card h3{font-size:12px;font-weight:700;color:#90cdf4;margin-bottom:14px}
+.ai{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #212940;font-size:12px}
+.ai:last-child{border-bottom:none}
+.ai .l{color:#a0aec0} .ai .v{color:#e2e8f0;font-weight:500}
+.brow{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:12px}
+.brow .nm{width:56px;color:#718096;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis}
+.brow .bg{flex:1;height:13px;background:#212940;border-radius:3px;overflow:hidden}
+.brow .bf{height:100%;background:linear-gradient(90deg,#3b5bdb,#4c6ef5);border-radius:3px;transition:width .35s}
+.brow .nv{width:54px;color:#c5cce0;text-align:right;flex-shrink:0}
+/* ── Sales detail card ── */
+.top-sales{background:#1a202c;border:1px solid #2d3748;border-radius:10px;padding:18px 20px;margin-bottom:28px}
+.top-sales h3{font-size:12px;font-weight:700;color:#90cdf4;margin-bottom:12px}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.sp-card{background:#141823;border:1px solid #1e2740;border-radius:8px;padding:12px 14px}
+.sp-card .sp-name{font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:4px;display:flex;justify-content:space-between}
+.sp-card .sp-team{font-size:11px;color:#4a5568}
+.sp-card .sp-num{font-size:11px;color:#9da9be;margin-top:6px;display:flex;gap:12px}
+.sp-card .sp-num span{display:flex;gap:4px;align-items:center}
+.sp-card .sp-num .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+
+@media(max-width:900px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .anl-grid{grid-template-columns:1fr}
+  .wrap{padding:14px}
+}
+</style>
+</head>
+<body>
+<div class="hd">
+  <div><h1>账户余量监测看板</h1><div class="sub">Meta 账户名额使用追踪 · 点击团队行折叠/展开销售明细</div></div>
+  <div id="hd-badge" class="badge">—</div>
+</div>
+<div class="wrap">
+  <div class="tabs" id="tabs"></div>
+  <div class="cards" id="cards"></div>
+  <div class="sec">各团队用量明细
+    <button class="sec-btn" id="toggle-all-btn" onclick="toggleAll()">全部收起</button>
+  </div>
+  <table class="tbl">
+    <thead><tr>
+      <th style="min-width:140px;text-align:left">团队 / 销售</th>
+      <th>分配名额</th>
+      <th>已使用</th>
+      <th>剩余名额</th>
+      <th style="min-width:120px">使用进度</th>
+      <th>非游戏</th>
+      <th>游戏</th>
+      <th id="wow-th" style="min-width:76px">环比</th>
+      <th style="max-width:160px">备注</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="anl-sec" style="display:none">
+    <div class="sec">周环比分析</div>
+    <div class="anl-grid" id="anl-grid"></div>
+    <div class="sec">本期活跃销售 TOP</div>
+    <div class="top-sales" id="top-sales-card"></div>
+  </div>
+</div>
+
+<script>
+const WD = {"0628": {"start_label": "0608", "teams": {"MH": {"quota": {"total": 44699, "non_game": 35759, "game": 8940}, "used": {"total": 22290, "non_game": 18530, "game": 3760}, "comment": "", "salespeople": []}, "华北": {"quota": {"total": 27139, "non_game": 22776, "game": 4363}, "used": {"total": 16356, "non_game": 9495, "game": 6861}, "comment": "华北游戏名额超量使用2498个", "salespeople": [{"name": "陈俊杰", "used": {"total": 4700, "non_game": 4612, "game": 88}}, {"name": "李杰", "used": {"total": 2445, "non_game": 1810, "game": 635}}, {"name": "刘宇航", "used": {"total": 545, "non_game": 452, "game": 93}}, {"name": "王笑宇", "used": {"total": 43, "non_game": 36, "game": 7}}, {"name": "张铁琤", "used": {"total": 2, "non_game": 0, "game": 2}}, {"name": "张玉惠文", "used": {"total": 103, "non_game": 96, "game": 7}}, {"name": "赵畅", "used": {"total": 8496, "non_game": 2473, "game": 6023}}, {"name": "张博", "used": {"total": 1, "non_game": 0, "game": 1}}, {"name": "朱俊耀", "used": {"total": 21, "non_game": 16, "game": 5}}]}, "广州": {"quota": {"total": 2200, "non_game": 2000, "game": 200}, "used": {"total": 2295, "non_game": 2252, "game": 43}, "comment": "广州总名额超量使用95个/非游名额超量使用252个", "salespeople": [{"name": "陈银娟", "used": {"total": 221, "non_game": 221, "game": 0}}, {"name": "张艳玲", "used": {"total": 2074, "non_game": 2031, "game": 43}}]}, "华东": {"quota": {"total": 15166, "non_game": 10328, "game": 4838}, "used": {"total": 5061, "non_game": 2845, "game": 2216}, "comment": "", "salespeople": [{"name": "陈娟", "used": {"total": 360, "non_game": 214, "game": 146}}, {"name": "邓霓妍", "used": {"total": 50, "non_game": 20, "game": 30}}, {"name": "江书娟", "used": {"total": 1075, "non_game": 389, "game": 686}}, {"name": "姜彩霞", "used": {"total": 1332, "non_game": 752, "game": 580}}, {"name": "南超", "used": {"total": 2244, "non_game": 1470, "game": 774}}]}, "华南": {"quota": {"total": 27146, "non_game": 22657, "game": 4489}, "used": {"total": 4899, "non_game": 2687, "game": 2212}, "comment": "", "salespeople": [{"name": "其他", "used": {"total": 151, "non_game": 41, "game": 110}}, {"name": "陈舒昱", "used": {"total": 308, "non_game": 121, "game": 187}}, {"name": "程晓庆", "used": {"total": 597, "non_game": 597, "game": 0}}, {"name": "丁昇", "used": {"total": 1088, "non_game": 331, "game": 757}}, {"name": "王雅琦", "used": {"total": 2647, "non_game": 1582, "game": 1065}}, {"name": "周镓", "used": {"total": 94, "non_game": 7, "game": 87}}, {"name": "赵萌", "used": {"total": 5, "non_game": 5, "game": 0}}, {"name": "廖琼", "used": {"total": 9, "non_game": 3, "game": 6}}]}, "Luban": {"quota": {"total": 8000, "non_game": 7970, "game": 30}, "used": {"total": 3514, "non_game": 3434, "game": 80}, "comment": "Luban游戏名额超量使用50个", "salespeople": []}, "TMT": {"quota": {"total": 3000, "non_game": 2500, "game": 500}, "used": {"total": 2618, "non_game": 2525, "game": 93}, "comment": "TMT非游名额超量使用25个", "salespeople": []}, "BMVN": {"quota": {"total": 600, "non_game": 540, "game": 60}, "used": {"total": 693, "non_game": 651, "game": 42}, "comment": "BMVN总名额超量使用93个/非游名额超量使用111个", "salespeople": [{"name": "Hailey Pham", "used": {"total": 40, "non_game": 40, "game": 0}}, {"name": "Hannie Ngan", "used": {"total": 19, "non_game": 19, "game": 0}}, {"name": "Lodri Sinaga", "used": {"total": 1, "non_game": 1, "game": 0}}, {"name": "logan.nguyen", "used": {"total": 9, "non_game": 9, "game": 0}}, {"name": "Nguyen Nhu", "used": {"total": 331, "non_game": 312, "game": 19}}, {"name": "Oi Tasia Maureen", "used": {"total": 7, "non_game": 7, "game": 0}}, {"name": "Trịnh Huyền Trang", "used": {"total": 267, "non_game": 247, "game": 20}}, {"name": "陈麒艳", "used": {"total": 5, "non_game": 5, "game": 0}}, {"name": "付婧雯", "used": {"total": 14, "non_game": 11, "game": 3}}, {"name": "刘琴", "used": {"total": 0, "non_game": 0, "game": 0}}]}, "品牌": {"quota": {"total": 50, "non_game": 45, "game": 5}, "used": {"total": 1, "non_game": 1, "game": 0}, "comment": "", "salespeople": [{"name": "张静", "used": {"total": 1, "non_game": 1, "game": 0}}]}, "__total__": {"quota": {"total": 128000, "non_game": 104575, "game": 23425}, "used": {"total": 57727, "non_game": 42420, "game": 15307}}}, "order": ["MH", "华北", "广州", "华东", "华南", "Luban", "TMT", "BMVN", "品牌"]}, "0711": {"start_label": "0703", "teams": {"MH": {"quota": {"total": 50000, "non_game": 36460, "game": 13540}, "used": {"total": 7415, "non_game": 6459, "game": 956}, "comment": "", "salespeople": []}, "华北": {"quota": {"total": 28000, "non_game": 22690, "game": 5310}, "used": {"total": 2092, "non_game": 1898, "game": 194}, "comment": "", "salespeople": [{"name": "陈俊杰", "used": {"total": 1347, "non_game": 1312, "game": 35}}, {"name": "李杰", "used": {"total": 235, "non_game": 195, "game": 40}}, {"name": "赵畅", "used": {"total": 221, "non_game": 190, "game": 31}}, {"name": "乔倩雯", "used": {"total": 126, "non_game": 43, "game": 83}}, {"name": "张玉惠文", "used": {"total": 82, "non_game": 82, "game": 0}}, {"name": "刘宇航", "used": {"total": 66, "non_game": 66, "game": 0}}, {"name": "朱俊耀", "used": {"total": 7, "non_game": 4, "game": 3}}, {"name": "王笑宇", "used": {"total": 6, "non_game": 6, "game": 0}}, {"name": "张博", "used": {"total": 2, "non_game": 0, "game": 2}}]}, "广州": {"quota": {"total": 4000, "non_game": 3440, "game": 560}, "used": {"total": 974, "non_game": 954, "game": 20}, "comment": "", "salespeople": [{"name": "张艳玲", "used": {"total": 974, "non_game": 954, "game": 20}}]}, "华东": {"quota": {"total": 12000, "non_game": 7820, "game": 4180}, "used": {"total": 3352, "non_game": 2135, "game": 1217}, "comment": "", "salespeople": [{"name": "南超", "used": {"total": 2718, "non_game": 1778, "game": 940}}, {"name": "姜彩霞", "used": {"total": 287, "non_game": 187, "game": 100}}, {"name": "江书娟", "used": {"total": 139, "non_game": 34, "game": 105}}, {"name": "邓霓妍", "used": {"total": 115, "non_game": 115, "game": 0}}, {"name": "陈娟", "used": {"total": 93, "non_game": 21, "game": 72}}]}, "华南": {"quota": {"total": 15000, "non_game": 11530, "game": 3470}, "used": {"total": 1429, "non_game": 955, "game": 474}, "comment": "", "salespeople": [{"name": "王雅琦", "used": {"total": 672, "non_game": 361, "game": 311}}, {"name": "X-GL", "used": {"total": 329, "non_game": 239, "game": 90}}, {"name": "程晓庆", "used": {"total": 144, "non_game": 144, "game": 0}}, {"name": "丁昇", "used": {"total": 138, "non_game": 78, "game": 60}}, {"name": "陈舒昱", "used": {"total": 113, "non_game": 113, "game": 0}}, {"name": "吴晓桐", "used": {"total": 15, "non_game": 15, "game": 0}}, {"name": "周镓", "used": {"total": 14, "non_game": 3, "game": 11}}, {"name": "张悦", "used": {"total": 2, "non_game": 2, "game": 0}}, {"name": "王凡", "used": {"total": 2, "non_game": 0, "game": 2}}]}, "Luban": {"quota": {"total": 10000, "non_game": 9980, "game": 20}, "used": {"total": 1876, "non_game": 1876, "game": 0}, "comment": "", "salespeople": []}, "TMT": {"quota": {"total": 10000, "non_game": 9180, "game": 820}, "used": {"total": 1488, "non_game": 1458, "game": 30}, "comment": "", "salespeople": []}, "BMVN": {"quota": {"total": 1000, "non_game": 870, "game": 130}, "used": {"total": 254, "non_game": 252, "game": 2}, "comment": "", "salespeople": [{"name": "Nguyen Nhu", "used": {"total": 83, "non_game": 81, "game": 2}}, {"name": "Hailey Pham", "used": {"total": 83, "non_game": 83, "game": 0}}, {"name": "Trịnh Huyền Trang", "used": {"total": 64, "non_game": 64, "game": 0}}, {"name": "陈麒艳", "used": {"total": 13, "non_game": 13, "game": 0}}, {"name": "付婧雯", "used": {"total": 7, "non_game": 7, "game": 0}}, {"name": "Lodri Sinaga", "used": {"total": 2, "non_game": 2, "game": 0}}, {"name": "Hannie Ngan", "used": {"total": 1, "non_game": 1, "game": 0}}, {"name": "刘维伟", "used": {"total": 1, "non_game": 1, "game": 0}}]}, "品牌": {"quota": {"total": 50, "non_game": 45, "game": 5}, "used": {"total": 20, "non_game": 20, "game": 0}, "comment": "", "salespeople": [{"name": "廖琼", "used": {"total": 19, "non_game": 19, "game": 0}}, {"name": "张静", "used": {"total": 1, "non_game": 1, "game": 0}}]}, "__total__": {"quota": {"total": 130050, "non_game": 102015, "game": 28035}, "used": {"total": 18900, "non_game": 16007, "game": 2893}}}, "order": ["MH", "华北", "广州", "华东", "华南", "Luban", "TMT", "BMVN", "品牌"]}};
+const TEAM_COLORS = ["#4c6ef5", "#12b886", "#f59f00", "#e64980", "#7950f2", "#1c7ed6", "#37b24d", "#f76707", "#74c0fc"];
+const WEEKS = Object.keys(WD).sort();
+let cur = WEEKS[WEEKS.length - 1];
+let allExpanded = true;
+
+const p2 = (a,b) => b ? (a/b*100).toFixed(1)+'%' : '—';
+const p2n = (a,b) => b ? a/b : 0;
+function pcolor(p){ return p>=1?'#fc8181':p>=.8?'#f6ad55':p>=.5?'#68d391':'#4c6ef5' }
+
+function prevWeek(w){
+  const i=WEEKS.indexOf(w); if(i<=0) return null;
+  const p=WEEKS[i-1];
+  return WD[p].start_label===WD[w].start_label ? p : null;
+}
+
+function renderTabs(){
+  const c=document.getElementById('tabs'); c.innerHTML='';
+  WEEKS.forEach(w=>{
+    const d=WD[w], sl=d.start_label||'';
+    const el=document.createElement('div');
+    el.className='tab'+(w===cur?' active':'');
+    el.textContent=sl?`${sl} → ${w}`:w;
+    el.onclick=()=>{cur=w;render()};
+    c.appendChild(el);
+  });
+}
+
+function toggleAll(){
+  allExpanded=!allExpanded;
+  document.querySelectorAll('.s-row').forEach(r=>r.style.display=allExpanded?'':'none');
+  document.querySelectorAll('.t-row').forEach(r=>r.classList.toggle('collapsed',!allExpanded));
+  document.getElementById('toggle-all-btn').textContent=allExpanded?'全部收起':'全部展开';
+}
+
+function render(){
+  allExpanded=true;
+  document.getElementById('toggle-all-btn').textContent='全部收起';
+  renderTabs();
+  const d=WD[cur];
+  const tot=d.teams['__total__']||{quota:{total:0,non_game:0,game:0},used:{total:0,non_game:0,game:0}};
+  const pw=prevWeek(cur), pd=pw?WD[pw]:null;
+
+  document.getElementById('hd-badge').textContent=
+    d.start_label?`统计区间：${d.start_label} → ${cur}`:`截至 ${cur}`;
+  document.getElementById('wow-th').textContent=pw?`vs ${pw}`:'环比';
+
+  // Cards
+  const rem=tot.quota.total-tot.used.total;
+  const prevTotUsed=pd?(pd.teams['__total__']||{used:{total:0}}).used.total:0;
+  const subStr=pd?`环比 +${(tot.used.total-prevTotUsed).toLocaleString()} 个`:'当期累计';
+  document.getElementById('cards').innerHTML=`
+    <div class="card c-blue"><div class="lbl">分配总名额</div>
+      <div class="val">${tot.quota.total.toLocaleString()}</div>
+      <div class="sub">非游 ${tot.quota.non_game.toLocaleString()} · 游 ${tot.quota.game.toLocaleString()}</div></div>
+    <div class="card c-orange"><div class="lbl">已使用名额</div>
+      <div class="val">${tot.used.total.toLocaleString()}</div>
+      <div class="sub">非游 ${tot.used.non_game.toLocaleString()} · 游 ${tot.used.game.toLocaleString()}</div></div>
+    <div class="card c-green"><div class="lbl">剩余名额</div>
+      <div class="val">${rem.toLocaleString()}</div>
+      <div class="sub">余量占比 ${p2(rem,tot.quota.total)}</div></div>
+    <div class="card c-purple"><div class="lbl">整体使用率</div>
+      <div class="val">${p2(tot.used.total,tot.quota.total)}</div>
+      <div class="sub">${subStr}</div></div>`;
+
+  // Table
+  const tbody=document.getElementById('tbody'); tbody.innerHTML='';
+  const order=d.order||Object.keys(d.teams).filter(k=>k!=='__total__');
+
+  order.forEach((team,ti)=>{
+    const t=d.teams[team]; if(!t) return;
+    const tc=TEAM_COLORS[ti%TEAM_COLORS.length];
+    const p=p2n(t.used.total,t.quota.total);
+    const rem_t=t.quota.total-t.used.total;
+    const col=pcolor(p);
+    const hasSp=t.salespeople&&t.salespeople.length>0;
+
+    // WoW team
+    let wow='<span class="nc">—</span>';
+    if(pd&&pd.teams[team]){
+      const delta=t.used.total-pd.teams[team].used.total;
+      wow=delta>0?`<span class="up">+${delta.toLocaleString()} ↑</span>`:
+           delta<0?`<span class="dn">${delta.toLocaleString()} ↓</span>`:`<span class="nc">0</span>`;
+    }
+
+    const tr=document.createElement('tr');
+    tr.className='t-row';
+    tr.style.borderLeftColor=tc;
+    tr.innerHTML=`
+      <td><span class="chev">${hasSp?'▼':''}</span>${team}</td>
+      <td>${t.quota.total.toLocaleString()}</td>
+      <td>${t.used.total.toLocaleString()}</td>
+      <td class="${rem_t<0?'over':''}">${rem_t.toLocaleString()}</td>
+      <td><div class="prog">
+        <div class="pbar"><div class="pfill" style="width:${Math.min(p*100,100)}%;background:${col}"></div></div>
+        <span class="ppct" style="color:${col}">${(p*100).toFixed(1)}%</span>
+      </div></td>
+      <td>${t.used.non_game.toLocaleString()}</td>
+      <td>${t.used.game.toLocaleString()}</td>
+      <td>${wow}</td>
+      <td style="font-size:11px;color:#718096;white-space:normal;max-width:160px">${t.comment||''}</td>`;
+
+    if(hasSp){
+      tr.onclick=function(){
+        this.classList.toggle('collapsed');
+        const expanded=!this.classList.contains('collapsed');
+        tbody.querySelectorAll(`.s-row[data-ti="${ti}"]`)
+          .forEach(r=>r.style.display=expanded?'':'none');
+      };
+    }
+    tbody.appendChild(tr);
+
+    // Salesperson rows — default VISIBLE
+    if(hasSp){
+      const sorted=[...t.salespeople].sort((a,b)=>b.used.total-a.used.total);
+      sorted.forEach((sp,si)=>{
+        const sharePct=p2n(sp.used.total,t.used.total);
+        const isLast=si===sorted.length-1;
+
+        let spWow='<span class="nc">—</span>';
+        if(pd&&pd.teams[team]){
+          const psp=pd.teams[team].salespeople.find(s=>s.name===sp.name);
+          if(psp){
+            const delta=sp.used.total-psp.used.total;
+            spWow=delta>0?`<span class="up">+${delta} ↑</span>`:
+                  delta<0?`<span class="dn">${delta} ↓</span>`:`<span class="nc">0</span>`;
+          } else if(sp.used.total>0){
+            spWow=`<span class="up">+${sp.used.total} 新</span>`;
+          }
+        }
+
+        const sr=document.createElement('tr');
+        sr.className='s-row';
+        sr.dataset.ti=ti;
+        sr.style.borderLeftColor=tc+'55'; // dimmed team color
+        sr.innerHTML=`
+          <td style="color:#b0bad0">${sp.name}</td>
+          <td style="color:#4a5568">—</td>
+          <td>${sp.used.total.toLocaleString()}</td>
+          <td style="color:#4a5568">—</td>
+          <td><div class="share">
+            <div class="sbar"><div class="sfill" style="width:${Math.min(sharePct*100,100).toFixed(1)}%;background:${tc}88"></div></div>
+            <span class="spct">${(sharePct*100).toFixed(1)}%</span>
+          </div></td>
+          <td>${sp.used.non_game.toLocaleString()}</td>
+          <td>${sp.used.game.toLocaleString()}</td>
+          <td>${spWow}</td>
+          <td></td>`;
+        tbody.appendChild(sr);
+      });
+    }
+  });
+
+  // Analysis section
+  const anlSec=document.getElementById('anl-sec');
+  if(!pd){ anlSec.style.display='none'; return; }
+  anlSec.style.display='';
+
+  const deltas=order.filter(t=>d.teams[t]).map(team=>{
+    const c2=d.teams[team].used.total, p2=pd.teams[team]?pd.teams[team].used.total:0;
+    return {team,cur:c2,prev:p2,delta:c2-p2};
+  }).sort((a,b)=>b.delta-a.delta);
+
+  const curTot=tot.used.total, prevTot=prevTotUsed;
+  const netNew=curTot-prevTot, maxB=Math.max(...deltas.map(d=>d.delta),1);
+  const prevQ=(pd.teams['__total__']||{}).quota?.total||tot.quota.total;
+  const ppct=prevTot/prevQ*100, cpct=curTot/tot.quota.total*100;
+  const diff=(cpct-ppct);
+  const top3=deltas.slice(0,3).filter(d=>d.delta>0).map(d=>`${d.team}(+${d.delta})`).join('、')||'—';
+  const zeroTeams=deltas.filter(d=>d.delta===0).map(d=>d.team).join('、')||'无';
+
+  const barsHtml=deltas.map(({team,delta})=>{
+    const w2=Math.max(delta/maxB*100,0).toFixed(1);
+    return `<div class="brow"><div class="nm">${team}</div>
+      <div class="bg"><div class="bf" style="width:${w2}%"></div></div>
+      <div class="nv">${delta>0?'+'+delta:delta}</div></div>`;
+  }).join('');
+
+  // Month progress
+  const dnum=parseInt(cur.slice(2)||0), mnum=parseInt(cur.slice(0,2)||7);
+  const mdays=[0,31,28,31,30,31,30,31,31,30,31,30,31][mnum]||31;
+  const mPct=(dnum/mdays*100).toFixed(1);
+
+  document.getElementById('anl-grid').innerHTML=`
+    <div class="anl-card">
+      <h3>📊 本期新增用量分布（${pw} → ${cur}）</h3>
+      ${barsHtml}
+      <div style="font-size:11px;color:#4a5568;margin-top:8px">各团队本期新增开户数</div>
+    </div>
+    <div class="anl-card">
+      <h3>📈 环比关键指标</h3>
+      <div class="ai"><span class="l">本期新增总开户</span><span class="v" style="color:#68d391">+${netNew.toLocaleString()} 个</span></div>
+      <div class="ai"><span class="l">使用率变化</span><span class="v">${ppct.toFixed(1)}% → ${cpct.toFixed(1)}%
+        <span class="${diff>=0?'up':'dn'}">(${diff>=0?'+':''}${diff.toFixed(1)}pp)</span></span></div>
+      <div class="ai"><span class="l">增量最多团队</span><span class="v">${top3}</span></div>
+      <div class="ai"><span class="l">有增量团队数</span><span class="v">${deltas.filter(d=>d.delta>0).length} / ${deltas.length}</span></div>
+      <div class="ai"><span class="l">零增量团队</span><span class="v" style="color:#718096">${zeroTeams}</span></div>
+      <div class="ai"><span class="l">月度进度对比</span><span class="v">用量 ${cpct.toFixed(1)}% vs 时间 ${mPct}%
+        <span class="${cpct<parseFloat(mPct)?'dn':'up'}">(${cpct<parseFloat(mPct)?'落后':'领先'} ${Math.abs(cpct-parseFloat(mPct)).toFixed(1)}pp)</span></span></div>
+    </div>`;
+
+  // Top salespeople across all teams
+  const allSp=[];
+  order.forEach((team,ti)=>{
+    const t=d.teams[team]; if(!t||!t.salespeople) return;
+    const tc=TEAM_COLORS[ti%TEAM_COLORS.length];
+    t.salespeople.forEach(sp=>{
+      let delta=sp.used.total;
+      if(pd&&pd.teams[team]){
+        const psp=pd.teams[team].salespeople.find(s=>s.name===sp.name);
+        delta=psp?sp.used.total-psp.used.total:sp.used.total;
+      }
+      allSp.push({...sp,team,tc,delta});
+    });
+  });
+  allSp.sort((a,b)=>b.delta-a.delta);
+  const top10=allSp.slice(0,10);
+  const maxD=Math.max(...top10.map(s=>s.delta),1);
+
+  const spCards=top10.map(sp=>{
+    const psp=pd&&pd.teams[sp.team]?pd.teams[sp.team].salespeople.find(s=>s.name===sp.name):null;
+    const wowTxt=sp.delta>0?`<span class="up">+${sp.delta}</span>`:sp.delta<0?`<span class="dn">${sp.delta}</span>`:`<span class="nc">0</span>`;
+    const barW=(sp.delta/maxD*100).toFixed(0);
+    return `<div class="sp-card">
+      <div class="sp-name">
+        <span>${sp.name}</span>${wowTxt}
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin:5px 0">
+        <div style="flex:1;height:4px;background:#212940;border-radius:2px">
+          <div style="height:100%;width:${barW}%;background:${sp.tc};border-radius:2px"></div>
+        </div>
+      </div>
+      <div class="sp-num">
+        <span><span class="dot" style="background:#a0aec0"></span>累计 ${sp.used.total}</span>
+        <span><span class="dot" style="background:#4c6ef5"></span>非游 ${sp.used.non_game}</span>
+        <span><span class="dot" style="background:#f59f00"></span>游戏 ${sp.used.game}</span>
+      </div>
+      <div class="sp-team" style="margin-top:5px;color:#4a5568">${sp.team}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('top-sales-card').innerHTML=`
+    <h3>本期新增用量 TOP ${top10.length}（个人环比增量排序）</h3>
+    <div class="sp-grid">${spCards}</div>`;
+}
+
+render();
+</script>
+</body>
+</html>
