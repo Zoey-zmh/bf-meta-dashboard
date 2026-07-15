@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><script>(function(){if(localStorage.getItem('quota_auth_v73668652')!=='1')window.location.replace('/');})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>大盘账单周度看板 | W0711</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--card2:#1c2330;--blue:#3b82f6;--purple:#8b5cf6;--teal:#06d6a0;--amber:#f59e0b;--red:#ef4444;--pink:#ec4899;--green:#22c55e;--text:#e6edf3;--muted:#7d8590;--border:#30363d}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'PingFang SC','Microsoft YaHei',sans-serif;line-height:1.6}
+.nav-bar{position:sticky;top:0;z-index:100;background:rgba(13,17,23,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.nav-pill{font-size:.74rem;color:var(--muted);padding:4px 12px;border-radius:100px;border:1px solid var(--border);text-decoration:none;transition:all .2s}
+.nav-pill:hover{color:var(--blue);border-color:var(--blue)}
+.hero{min-height:52vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:60px 20px;position:relative;overflow:hidden;background:linear-gradient(180deg,var(--bg) 0%,#0a0f1a 60%,var(--bg) 100%)}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(59,130,246,.18) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);color:var(--blue);padding:6px 16px;border-radius:100px;font-size:13px;margin-bottom:18px}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:700;letter-spacing:-.5px;margin-bottom:10px}
+.hero h1 span{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.week-banner{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:8px 18px;font-size:.82rem;color:var(--amber);display:inline-flex;align-items:center;gap:8px;margin-bottom:18px}
+.hero-stats{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 22px;min-width:125px;position:relative;overflow:hidden;transition:transform .2s}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card:nth-child(1)::before{background:var(--blue)}.stat-card:nth-child(2)::before{background:var(--teal)}.stat-card:nth-child(3)::before{background:var(--blue)}.stat-card:nth-child(4)::before{background:var(--amber)}
+.stat-num{font-size:1.7rem;font-weight:700;display:block}
+.stat-num.blue{color:var(--blue)}.stat-num.teal{color:var(--teal)}.stat-num.red{color:var(--red)}.stat-num.amber{color:var(--amber)}
+.stat-label{font-size:.72rem;color:var(--muted);margin-top:4px}
+.section{padding:56px 20px;max-width:1200px;margin:0 auto}
+.section-title{text-align:center;margin-bottom:34px}
+.section-title h2{font-size:1.5rem;font-weight:700;margin-bottom:8px}
+.divider{border:none;border-top:1px solid var(--border);margin:56px auto;max-width:1200px}
+.tag{display:inline-block;padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:600;letter-spacing:.5px;margin-bottom:10px}
+.tag.blue{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+.tag.purple{background:rgba(139,92,246,.15);color:var(--purple);border:1px solid rgba(139,92,246,.3)}
+.tag.teal{background:rgba(6,214,160,.15);color:var(--teal);border:1px solid rgba(6,214,160,.3)}
+.tag.amber{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.tier-stats{display:flex;gap:22px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.tstat{text-align:center}.tstat-l{font-size:.72rem;color:var(--muted);margin-top:2px}
+.data-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(305px,1fr));gap:15px}
+.data-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px 18px;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.data-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.data-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.data-card.up::before{background:linear-gradient(90deg,var(--teal),rgba(6,214,160,.2))}
+.data-card.down::before{background:linear-gradient(90deg,var(--red),rgba(239,68,68,.2))}
+.data-card.big-up::before{background:linear-gradient(90deg,var(--blue),var(--teal))}
+.data-card.big-down::before{background:linear-gradient(90deg,var(--red),var(--pink))}
+.dc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.dc-name{font-size:.86rem;font-weight:600;line-height:1.4;max-width:210px}
+.dc-meta{font-size:.68rem;color:var(--muted);margin-bottom:10px}
+.dc-vertical{font-size:.62rem;padding:2px 7px;border-radius:100px;font-weight:600;letter-spacing:.5px;flex-shrink:0;margin-top:2px}
+.v-GAME{background:rgba(139,92,246,.15);color:#a78bfa}.v-EC{background:rgba(245,158,11,.15);color:#fbbf24}
+.v-APP{background:rgba(59,130,246,.15);color:#60a5fa}.v-FIN{background:rgba(6,214,160,.15);color:#34d399}
+.v-BRANDING{background:rgba(236,72,153,.15);color:#f472b6}
+.dc-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:9px}
+.dc-metric label{font-size:.6rem;color:var(--muted);display:block;margin-bottom:2px}
+.dc-metric value{font-size:.92rem;font-weight:700}
+.pct-pos{color:var(--teal)}.pct-big-pos{color:var(--blue)}.pct-neg{color:#f87171}.pct-big-neg{color:var(--red)}
+.dc-reason{font-size:.72rem;color:var(--muted);background:rgba(255,255,255,.03);border-left:3px solid var(--border);padding:7px 10px;border-radius:0 8px 8px 0;line-height:1.5;margin-top:6px}
+.dc-reason.reason-up{border-left-color:var(--teal)}.dc-reason.reason-down{border-left-color:var(--red)}
+.dc-reason.reason-big-down{border-left-color:var(--pink)}.dc-reason.reason-big-up{border-left-color:var(--blue)}
+.bdg-row{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.badge{font-size:.6rem;padding:1px 6px;border-radius:100px;font-weight:600;white-space:nowrap}
+.bdg-teal{background:rgba(6,214,160,.12);color:var(--teal);border:1px solid rgba(6,214,160,.25)}
+.bdg-green{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.bdg-purple{background:rgba(139,92,246,.12);color:var(--purple);border:1px solid rgba(139,92,246,.25)}
+.bdg-amber{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.25)}
+.bdg-hist-gp{background:rgba(6,214,160,.06);color:#6ee7b7;border:1px dashed rgba(6,214,160,.3);opacity:.8}
+.bdg-hist-zk{background:rgba(245,158,11,.06);color:#fcd34d;border:1px dashed rgba(245,158,11,.3);opacity:.8}
+.bdg-hist-lv{background:rgba(59,130,246,.06);color:#93c5fd;border:1px dashed rgba(59,130,246,.3);opacity:.8}
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.summary-table{width:100%;border-collapse:collapse}
+.summary-table th{padding:10px 12px;font-size:.7rem;color:var(--muted);text-align:right;font-weight:500;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);letter-spacing:.5px}
+.summary-table th:first-child{text-align:left}
+.summary-table tr:hover td{background:rgba(255,255,255,.015)}
+.bar-track{height:22px;background:rgba(255,255,255,.04);border-radius:5px;position:relative;overflow:hidden;width:100%}
+.bar-fill{height:100%;border-radius:5px;position:absolute;left:50%;top:0;display:flex;align-items:center;padding:0 6px;font-size:.65rem;font-weight:600;white-space:nowrap}
+.bar-fill.pos{background:linear-gradient(90deg,rgba(6,214,160,.8),rgba(6,214,160,.3));color:#e0fff8}
+.bar-fill.neg{background:linear-gradient(90deg,rgba(239,68,68,.3),rgba(239,68,68,.8));right:50%;left:auto;justify-content:flex-end;color:#ffe0e0}
+.bar-fill.big-pos{background:linear-gradient(90deg,rgba(59,130,246,.9),rgba(139,92,246,.5));color:#e0f0ff}
+.bar-fill.big-neg{background:linear-gradient(90deg,rgba(236,72,153,.4),rgba(239,68,68,.9));right:50%;left:auto;justify-content:flex-end;color:#ffe0ff}
+.bar-center{width:1px;height:100%;background:var(--border);position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:1}
+/* Coverage section */
+.cov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.cov-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px}
+.cov-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cov-label{display:flex;align-items:center;gap:8px}
+.cov-pct{font-size:1.4rem;font-weight:700}
+.cov-bar-track{height:6px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:10px;overflow:hidden}
+.cov-bar-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.cov-meta{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted)}
+.cov-meta b{color:var(--text)}
+.cov-note{margin-top:8px;font-size:.7rem;color:var(--red);opacity:.8;border-left:2px solid var(--red);padding-left:8px}
+.cov-summary{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.cov-stat{text-align:center;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 22px}
+.cov-stat .num{font-size:1.5rem;font-weight:700}
+.cov-stat .lbl{font-size:.72rem;color:var(--muted);margin-top:3px}
+footer{text-align:center;padding:36px 20px;color:var(--muted);font-size:.74rem;border-top:1px solid var(--border)}
+/* Overview cards */
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.ov-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px}
+.ov-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.ov-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ov-label{font-size:.82rem;font-weight:600}
+.ov-stats{text-align:right;white-space:nowrap}
+.ov-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.ov-pill{font-size:.66rem;padding:2px 8px;border-radius:100px;background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+.ov-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px}
+.ov-list li{font-size:.74rem;color:var(--muted);line-height:1.4;padding-left:8px;border-left:2px solid var(--border)}
+.ov-list li b{color:var(--text)}
+</style>
+</head>
+<body><a href="/" style="position:fixed;top:16px;left:16px;z-index:999;font-size:12px;color:#718096;text-decoration:none;background:#1a202c;border:1px solid #2d3748;padding:5px 12px;border-radius:8px;">← 返回首页</a>
+
+<nav class="nav-bar">
+  <a class="nav-pill" href="#summary">📋 汇总</a>
+  <a class="nav-pill" href="#overview">🔍 概括分析</a>
+  <a class="nav-pill" href="#tier-1">1 IM</a>
+  <a class="nav-pill" href="#tier-2">2 MM</a>
+  <a class="nav-pill" href="#tier-3">3 RO-EC</a>
+  <a class="nav-pill" href="#tier-4">4 RO-Apps</a>
+  <a class="nav-pill" href="#tier-5">5 高潜</a>
+  <a class="nav-pill" href="#tier-6">6 RP</a>
+  <a class="nav-pill" href="#tier-7">7 Rest</a>
+  <a class="nav-pill" href="#coverage">📊 覆盖率</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge"><span class="dot"></span>Meta 大盘账单 · 周度分析看板</div>
+  <div class="week-banner">📅 本周 07/11 vs 上周 07/04</div>
+  <h1>大盘<span>周度波动</span>看板</h1>
+  <div class="hero-stats">
+    <div class="stat-card"><span class="stat-num red">$-1.22M</span><div class="stat-label">Reseller Total WOW</div></div>
+    <div class="stat-card"><span class="stat-num red">-1.0%</span><div class="stat-label">整体 WOW%</div></div>
+    <div class="stat-card"><span class="stat-num blue">$121.56M</span><div class="stat-label">本周总消耗</div></div>
+    <div class="stat-card"><span class="stat-num amber">60</span><div class="stat-label">入选分析主体</div></div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<div class="section" id="summary">
+  <div class="section-title">
+    <div class="tag blue">📋 汇总总览</div>
+    <h2>本周最终汇总表</h2>
+    <p style="color:var(--muted);font-size:.83rem;margin-top:6px">各层级本周 vs 上周消耗对比 · WOW 横向瀑布图</p>
+  </div>
+  <div class="tbl-wrap">
+    <table class="summary-table">
+      <thead><tr>
+        <th style="text-align:left;padding:12px 16px">层级</th>
+        <th>QTD</th><th>RR</th><th>本周</th><th>上周</th>
+        <th style="text-align:center;min-width:180px">WOW 波动</th>
+        <th>WOW%</th><th>编号</th>
+      </tr></thead>
+      <tbody><tr style="border-bottom:1px solid rgba(48,54,61,.6);font-weight:700">
+  <td style="padding:11px 16px;font-size:.85rem">Reseller Total</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$192.94M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$1581.41M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$121.56M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$122.77M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill big-neg" style="width:46.0%">-1.22M</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-neg">-1.0%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">—</td>
+</tr><tr style="border-bottom:1px solid rgba(48,54,61,.6);font-weight:700">
+  <td style="padding:11px 16px;font-size:.85rem">Managed total (IM+MM)</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$156.35M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$1292.43M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$98.49M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$99.84M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill big-neg" style="width:46%">-1.35M</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-neg">-1.3%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">—</td>
+</tr><tr style="border-bottom:1px solid rgba(48,54,61,.6);">
+  <td style="padding:11px 16px;font-size:.85rem">IM (Greater China)</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$126.77M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$1054.30M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$80.35M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$80.89M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill big-neg" style="width:20.499039579735772%">-542.1K</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-neg">-0.7%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">1</td>
+</tr><tr style="border-bottom:1px solid rgba(48,54,61,.6);">
+  <td style="padding:11px 16px;font-size:.85rem">MM (AM-Greater China)</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$29.58M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$238.12M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$18.14M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$18.95M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill big-neg" style="width:30.43419785529689%">-804.8K</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-neg">-4.2%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">2</td>
+</tr><tr><td colspan="8" style="height:14px;border:none"></td></tr><tr style="border-bottom:1px solid rgba(48,54,61,.6);font-weight:700">
+  <td style="padding:11px 16px;font-size:.85rem">RO (RP-Greater China)</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$36.59M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$288.98M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$23.07M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$22.94M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill big-pos" style="width:4.9332374350322326%">+130.5K</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-pos">+0.6%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">—</td>
+</tr><tr style="border-bottom:1px solid rgba(48,54,61,.6);">
+  <td style="padding:11px 16px;font-size:.85rem">RO-EC (EC/CPG/Retail)</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$16.93M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$137.70M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$10.79M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$10.66M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill big-pos" style="width:4.867227565572197%">+128.7K</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-pos">+1.2%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">3</td>
+</tr><tr style="border-bottom:1px solid rgba(48,54,61,.6);">
+  <td style="padding:11px 16px;font-size:.85rem">RO-Apps & Game (Non-EC)</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$19.67M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$151.28M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$12.28M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$12.28M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill pos" style="width:0.06600986946003588%">+1.7K</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-pos">+0.0%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">4</td>
+</tr><tr style="border-bottom:1px solid rgba(48,54,61,.6);">
+  <td style="padding:11px 16px;font-size:.85rem">Targeted Accelerate</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$7.40M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$62.07M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$4.75M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$4.74M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill pos" style="width:0.3773641284151345%">+10.0K</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-pos">+0.2%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">5</td>
+</tr><tr style="border-bottom:1px solid rgba(48,54,61,.6);">
+  <td style="padding:11px 16px;font-size:.85rem">Reseller Pro</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$4.06M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$33.68M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$2.56M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$2.68M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill big-neg" style="width:4.631781309849057%">-122.5K</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-neg">-4.6%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">6</td>
+</tr><tr style="border-bottom:1px solid rgba(48,54,61,.6);">
+  <td style="padding:11px 16px;font-size:.85rem">Rest of RO</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$24.97M</td>
+  <td style="padding:11px 8px;font-size:.78rem;text-align:right;color:var(--muted)">$191.81M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$15.64M</td>
+  <td style="padding:11px 8px;font-size:.82rem;text-align:right">$15.37M</td>
+  <td style="padding:11px 12px"><div class="bar-track"><div class="bar-center"></div>
+    <div class="bar-fill big-pos" style="width:10.398095977378917%">+275.0K</div></div></td>
+  <td style="padding:11px 8px;font-size:.85rem;text-align:right" class="pct-pos">+1.8%</td>
+  <td style="padding:11px 8px;text-align:center;font-size:.78rem;color:var(--muted)">7</td>
+</tr></tbody>
+    </table>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ══════════ OVERVIEW SECTION ══════════ -->
+<div class="section" id="overview">
+  <div class="section-title">
+    <div class="tag blue">🔍 概括分析</div>
+    <h2>各层级波动原因速览</h2>
+    <p style="color:var(--muted);font-size:.83rem;margin-top:6px">
+      基于入选主体的历史原因与数据模式自动归纳，供快速判断波动方向参考
+    </p>
+  </div>
+  <div class="ov-grid"><div class="ov-card">
+  <div class="ov-header">
+    <div class="ov-title">
+      <span class="tag blue" style="margin:0;font-size:.66rem">📊 1</span>
+      <span class="ov-label">IM (Greater China)</span>
+    </div>
+    <div class="ov-stats">
+      <span class="pct-neg" style="font-size:1.05rem;font-weight:700">$-542.1K</span>
+      <span class="pct-neg" style="font-size:.78rem;margin-left:5px">-0.7%</span>
+    </div>
+  </div>
+  <div class="ov-pills"><span class="ov-pill">🔧 效果调整/素材优化</span><span class="ov-pill">📅 Q3新季度自然起量</span></div>
+  <ul class="ov-list"><li><b>北京字节跳动科技有限公司)</b>：APP买量放缓，可能处于测试间歇期或ROI优化阶段。</li><li><b>深圳市无限进制科技有限公司</b>：根据roi常规调整</li></ul>
+</div><div class="ov-card">
+  <div class="ov-header">
+    <div class="ov-title">
+      <span class="tag purple" style="margin:0;font-size:.66rem">📈 2</span>
+      <span class="ov-label">MM (AM-Greater China)</span>
+    </div>
+    <div class="ov-stats">
+      <span class="pct-neg" style="font-size:1.05rem;font-weight:700">$-804.8K</span>
+      <span class="pct-neg" style="font-size:.78rem;margin-left:5px">-4.2%</span>
+    </div>
+  </div>
+  <div class="ov-pills"><span class="ov-pill">🚀 大推活动驱动</span><span class="ov-pill">🎬 新游/新剧上线买量</span></div>
+  <ul class="ov-list"><li><b>广州市扬林科技有限公司</b>：itoolmax电商平台打折促销，新批次账户批量起量，整体消耗环比大幅提升</li><li><b>上海聚市网络科技有限公司</b>：新游大推</li></ul>
+</div><div class="ov-card">
+  <div class="ov-header">
+    <div class="ov-title">
+      <span class="tag amber" style="margin:0;font-size:.66rem">🛒 3</span>
+      <span class="ov-label">RO-EC (EC/CPG/Retail)</span>
+    </div>
+    <div class="ov-stats">
+      <span class="pct-pos" style="font-size:1.05rem;font-weight:700">+$128.7K</span>
+      <span class="pct-pos" style="font-size:.78rem;margin-left:5px">+1.2%</span>
+    </div>
+  </div>
+  <div class="ov-pills"><span class="ov-pill">🟢 绿通权益生效带动</span><span class="ov-pill">🛒 旺季/促销节点</span><span class="ov-pill">📅 Q3新季度自然起量</span></div>
+  <ul class="ov-list"><li><b>重庆应森电子商务有限公司</b>：短剧客户，回收较好</li><li><b>上海山科机器人有限公司</b>：割草机，客户持续加预算中，4月预算是 3月的 1.5 倍</li><li><b>广西海峰电子商务有限公司</b>：EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</li><li><b>深圳市罗湖区博雅咨询中心</b>：EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</li><li><b>闻喜丰茂电子商务有限公司</b>：产品包数据佳，持续放量中</li></ul>
+</div><div class="ov-card">
+  <div class="ov-header">
+    <div class="ov-title">
+      <span class="tag purple" style="margin:0;font-size:.66rem">🎮 4</span>
+      <span class="ov-label">RO-Apps & Game (Non-EC)</span>
+    </div>
+    <div class="ov-stats">
+      <span class="pct-pos" style="font-size:1.05rem;font-weight:700">+$1.7K</span>
+      <span class="pct-pos" style="font-size:.78rem;margin-left:5px">+0.0%</span>
+    </div>
+  </div>
+  <div class="ov-pills"><span class="ov-pill">⚡ 加白真金产品客户扩量</span><span class="ov-pill">🟢 绿通权益生效带动</span><span class="ov-pill">📅 Q3新季度自然起量</span></div>
+  <ul class="ov-list"><li><b>杭州听春雨网络科技有限公司</b>：游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</li><li><b>上海趣拉科技有限公司</b>：加白真金  投放加白真金产品。当前违规率较可控，已重点沟通客户保持合规</li><li><b>大庆市凡辉科技有限公司</b>：APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</li><li><b>大庆市流珉科技有限公司</b>：APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</li><li><b>宁波健道健康科技有限公司</b>：产品投放效果好加量</li></ul>
+</div><div class="ov-card">
+  <div class="ov-header">
+    <div class="ov-title">
+      <span class="tag teal" style="margin:0;font-size:.66rem">🎯 5</span>
+      <span class="ov-label">Targeted Accelerate</span>
+    </div>
+    <div class="ov-stats">
+      <span class="pct-pos" style="font-size:1.05rem;font-weight:700">+$10.0K</span>
+      <span class="pct-pos" style="font-size:.78rem;margin-left:5px">+0.2%</span>
+    </div>
+  </div>
+  <div class="ov-pills"><span class="ov-pill" style="opacity:.5">待分析</span></div>
+  <ul class="ov-list"><li><b>重庆应森电子商务有限公司</b>：短剧客户，回收较好</li><li><b>上海山科机器人有限公司</b>：割草机，客户持续加预算中，4月预算是 3月的 1.5 倍</li><li><b>广东甜秘密创新技术有限公司</b>：货备好了加大投放</li><li><b>武汉松立科技有限公司</b>：益智游戏，广告素材扩量，整体消耗环比小幅提升</li><li><b>无锡天天向上文化传媒有限公司</b>：新产品涨量</li></ul>
+</div><div class="ov-card">
+  <div class="ov-header">
+    <div class="ov-title">
+      <span class="tag blue" style="margin:0;font-size:.66rem">⭐ 6</span>
+      <span class="ov-label">Reseller Pro</span>
+    </div>
+    <div class="ov-stats">
+      <span class="pct-neg" style="font-size:1.05rem;font-weight:700">$-122.5K</span>
+      <span class="pct-neg" style="font-size:.78rem;margin-left:5px">-4.6%</span>
+    </div>
+  </div>
+  <div class="ov-pills"><span class="ov-pill">💥 爆款持续增量</span><span class="ov-pill">🚀 大推活动驱动</span><span class="ov-pill">🛒 旺季/促销节点</span></div>
+  <ul class="ov-list"><li><b>义乌市三核电子商务有限公司</b>：制冷机产品夏季旺季，新批次广告快速起量，整体消耗环比大幅提升</li><li><b>榛言网络科技（上海）有限公司</b>：MaxNovel东南亚大推</li><li><b>上海散爆网络科技有限公司</b>：GIRLS\' FRONTLINE 2: EXILIUM 美国大推结束</li><li><b>海南优矩科技有限公司</b>：短剧产品“ChillShorts - Popular Short Dramas”投放效果不理想，关闭了效果不好的广告，同</li><li><b>深圳津渡生物医学科技有限公司</b>：AI医疗产品，使用爆款素材拓不同的受众来测，近期效果不错</li></ul>
+</div><div class="ov-card">
+  <div class="ov-header">
+    <div class="ov-title">
+      <span class="tag teal" style="margin:0;font-size:.66rem">🌐 7</span>
+      <span class="ov-label">Rest of RO</span>
+    </div>
+    <div class="ov-stats">
+      <span class="pct-pos" style="font-size:1.05rem;font-weight:700">+$275.0K</span>
+      <span class="pct-pos" style="font-size:.78rem;margin-left:5px">+1.8%</span>
+    </div>
+  </div>
+  <div class="ov-pills"><span class="ov-pill">⚡ 加白真金产品客户扩量</span><span class="ov-pill">🟢 绿通权益生效带动</span><span class="ov-pill">🛒 旺季/促销节点</span></div>
+  <ul class="ov-list"><li><b>杭州听春雨网络科技有限公司</b>：游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</li><li><b>上海趣拉科技有限公司</b>：加白真金  投放加白真金产品。当前违规率较可控，已重点沟通客户保持合规</li><li><b>广西海峰电子商务有限公司</b>：EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</li><li><b>大庆市凡辉科技有限公司</b>：APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</li><li><b>大庆市流珉科技有限公司</b>：APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</li></ul>
+</div></div>
+</div>
+
+<hr class="divider">
+
+<div class="section" id="tier-1">
+  <div class="section-title">
+    <div class="tag blue">📊 Group 1</div>
+    <h2>IM (Greater China)</h2>
+    <div class="tier-stats">
+      <div class="tstat"><div class="pct-neg" style="font-size:1.6rem;font-weight:700">$-542.1K</div><div class="tstat-l">WOW</div></div>
+      <div class="tstat"><div class="pct-neg" style="font-size:1.6rem;font-weight:700">-0.7%</div><div class="tstat-l">WOW%</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700">$80.35M</div><div class="tstat-l">本周消耗</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700;color:var(--blue)">2</div><div class="tstat-l">入选主体</div></div>
+    </div>
+  </div>
+  <div class="data-grid"><div class="data-card big-down" title="beijing bytedance technology co., ltd (北京字节跳动科技有限公司)">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">北京字节跳动科技有限公司)</div>
+      <div class="bdg-row"><span class="badge bdg-amber">🏢 直客</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 刘宇航</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$638.1K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$1.10M</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-460.0K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-41.9%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-5.78M</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-40.1%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">💡 [直客] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP买量放缓，可能处于测试间歇期或ROI优化阶段。</div>
+</div>
+<div class="data-card down" title="stary - shenzhen wuxian jinzhi technology co., ltd 深圳市无限进制科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">深圳市无限进制科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-amber">🏢 直客</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$1.07M</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$1.37M</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-neg">$-300.7K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-neg">-21.9%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-neg">$-3.79M</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-neg">-20.9%</value></div>
+  </div>
+  <div class="dc-reason reason-down">✅ [260615] 根据roi常规调整</div>
+</div></div>
+</div><hr class="divider"><div class="section" id="tier-2">
+  <div class="section-title">
+    <div class="tag purple">📈 Group 2</div>
+    <h2>MM (AM-Greater China)</h2>
+    <div class="tier-stats">
+      <div class="tstat"><div class="pct-neg" style="font-size:1.6rem;font-weight:700">$-804.8K</div><div class="tstat-l">WOW</div></div>
+      <div class="tstat"><div class="pct-neg" style="font-size:1.6rem;font-weight:700">-4.2%</div><div class="tstat-l">WOW%</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700">$18.14M</div><div class="tstat-l">本周消耗</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700;color:var(--purple)">2</div><div class="tstat-l">入选主体</div></div>
+    </div>
+  </div>
+  <div class="data-grid"><div class="data-card big-down" title="guang zhou shi yang lin ke ji you xian gong si 广州市扬林科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广州市扬林科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-amber">🏢 直客</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$188.1K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$1.21M</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-1.02M</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-84.5%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-12.88M</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-78.6%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">↔️ [260706] itoolmax电商平台打折促销，新批次账户批量起量，整体消耗环比大幅提升</div>
+</div>
+<div class="data-card big-down" title="shanghai ju shi network technology co., ltd. 上海聚市网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海聚市网络科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-amber">🏢 直客</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$125.7K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$291.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-165.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-56.8%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-2.08M</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-55.1%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">↔️ [260629] 新游大推</div>
+</div></div>
+</div><hr class="divider"><div class="section" id="tier-3">
+  <div class="section-title">
+    <div class="tag amber">🛒 Group 3</div>
+    <h2>RO-EC (EC/CPG/Retail)</h2>
+    <div class="tier-stats">
+      <div class="tstat"><div class="pct-pos" style="font-size:1.6rem;font-weight:700">+$128.7K</div><div class="tstat-l">WOW</div></div>
+      <div class="tstat"><div class="pct-pos" style="font-size:1.6rem;font-weight:700">+1.2%</div><div class="tstat-l">WOW%</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700">$10.79M</div><div class="tstat-l">本周消耗</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700;color:var(--amber)">15</div><div class="tstat-l">入选主体</div></div>
+    </div>
+  </div>
+  <div class="data-grid"><div class="data-card big-up" title="chong qing ying sen dian zi shang wu you xian gong si 重庆应森电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">重庆应森电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 姜彩霞</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$135.6K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$68.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$67.6K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+99.3%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$849.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+93.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260518] 短剧客户，回收较好</div>
+</div>
+<div class="data-card big-up" title="shanghai shanke robot co., ltd 上海山科机器人有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海山科机器人有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span></div>
+    </div>
+    <span class="dc-vertical v-BRANDING">BRANDING</span>
+  </div>
+  <div class="dc-meta">TMT · BVT</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$77.3K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$37.3K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$40.0K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+107.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$503.0K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+103.3%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260427] 割草机，客户持续加预算中，4月预算是 3月的 1.5 倍</div>
+</div>
+<div class="data-card big-up" title="guangxi haifeng e-commerce co., ltd. 广西海峰电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广西海峰电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-hist-lv">🔵 历史绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 王雅琦</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$50.3K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$15.6K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$34.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+223.5%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$437.1K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+213.5%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 [历史绿通] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="shen zhen shi sha le mei mei rong mei fa you xian gong si 深圳市罗湖区博雅咨询中心">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">深圳市罗湖区博雅咨询中心</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 陈娟</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$31.9K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$2.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$29.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+1472.7%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$375.2K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+1397.1%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 [绿通权益] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="fenyi guize e-commerce co., ltd. 闻喜丰茂电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">闻喜丰茂电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 王雅琦</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$47.1K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$17.8K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$29.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+164.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$368.2K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+157.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260601] 产品包数据佳，持续放量中</div>
+</div>
+<div class="data-card big-up" title="sweetnight 广东甜秘密创新技术有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广东甜秘密创新技术有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$109.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$82.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$27.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+33.2%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$343.4K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+31.8%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260601] 货备好了加大投放</div>
+</div>
+<div class="data-card big-up" title="xi an jin chuan wang luo ke ji you xian gong si 湖南怀念电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">湖南怀念电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 王雅琦</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$26.0K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$12.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$13.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+113.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$179.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+116.6%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 [绿通权益] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="上海泽泓宇互联网技术有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海泽泓宇互联网技术有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-FIN">FIN</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$37.1K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$23.8K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$13.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+55.8%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$166.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+53.3%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260706] MexiCash现金贷APP，素材快速扩量，整体消耗环比大幅增长</div>
+</div>
+<div class="data-card big-up" title="beijing henggao technology co., ltd 北京恒高技术有限责任公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">北京恒高技术有限责任公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">Luban · 李腾</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$42.8K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$29.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$12.9K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+43.1%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$161.9K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+41.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260629] 联盟模式，近期测试数据较好offer，扩量中</div>
+</div>
+<div class="data-card big-up" title="福州市亨聚科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">福州市亨聚科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$13.9K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$1.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$12.9K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+1256.3%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$127.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+919.5%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="shaanxi miseng boguo e-commerce co., ltd. 陕西觅森菠果电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">陕西觅森菠果电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 陈舒昱</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$51.9K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$39.1K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$12.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+32.7%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$160.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+31.1%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 [绿通权益] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card up" title="ningbo zhuoge technology co., ltd 宁波卓格科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">宁波卓格科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$54.7K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$42.4K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-pos">+$12.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-pos">+29.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-pos">+$154.5K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-pos">+27.7%</value></div>
+  </div>
+  <div class="dc-reason reason-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="南城双港数字科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">南城双港数字科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$14.7K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$3.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$11.4K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+354.3%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$126.1K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+317.8%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="guangdong gongke electronic industry co., ltd 广东共科电子实业有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广东共科电子实业有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">TMT · BVT</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$32.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$21.5K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$10.9K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+50.8%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$137.6K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+48.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260629] amazon prime day 促销</div>
+</div>
+<div class="data-card big-up" title="loudi qingyuan e-commerce co., ltd 娄底市庆源电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">娄底市庆源电子商务有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$29.4K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$18.5K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$10.9K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+58.7%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$136.6K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+54.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260706] 电商普货Q3新客，多账户处于学习期，整体消耗从零起量</div>
+</div></div>
+</div><hr class="divider"><div class="section" id="tier-4">
+  <div class="section-title">
+    <div class="tag purple">🎮 Group 4</div>
+    <h2>RO-Apps & Game (Non-EC)</h2>
+    <div class="tier-stats">
+      <div class="tstat"><div class="pct-pos" style="font-size:1.6rem;font-weight:700">+$1.7K</div><div class="tstat-l">WOW</div></div>
+      <div class="tstat"><div class="pct-pos" style="font-size:1.6rem;font-weight:700">+0.0%</div><div class="tstat-l">WOW%</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700">$12.28M</div><div class="tstat-l">本周消耗</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700;color:var(--purple)">15</div><div class="tstat-l">入选主体</div></div>
+    </div>
+  </div>
+  <div class="data-grid"><div class="data-card big-up" title="hangzhou tingchunyu network technology co., ltd. 杭州听春雨网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">杭州听春雨网络科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$373.0K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$50.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$322.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+643.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$3.31M</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+723.4%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260706] [绿通权益] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</div>
+</div>
+<div class="data-card big-up" title="shanghai qula technology co., ltd. 上海趣拉科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海趣拉科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$382.7K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$130.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$251.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+192.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$3.00M</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+170.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">⚡ 该客户投放加白真金产品。 ✅ [260706] 投放加白真金产品。[绿通权益] 当前违规率较可控，已重点沟通客户保持合规</div>
+</div>
+<div class="data-card big-up" title="daqing fanhui technology co., ltd. 大庆市凡辉科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">大庆市凡辉科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$40.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$6.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$34.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+572.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$433.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+532.7%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div>
+<div class="data-card big-up" title="daqing liumin technology co., ltd. 大庆市流珉科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">大庆市流珉科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$54.8K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$22.8K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$32.1K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+140.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$402.9K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+132.1%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div>
+<div class="data-card up" title="ningbo jiandao health technology co., ltd. 宁波健道健康科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">宁波健道健康科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">BV · 王凡</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$153.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$123.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-pos">+$30.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-pos">+24.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-pos">+$380.6K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-pos">+23.4%</value></div>
+  </div>
+  <div class="dc-reason reason-up">✅ [260706] 产品投放效果好加量</div>
+</div>
+<div class="data-card big-up" title="beijing perfect world software technology co.,ltd 完美世界(北京)软件科技发展有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">完美世界(北京)软件科技发展有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$29.0K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$0</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$29.0K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+100.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$365.0K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+100.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260420] 游戏“NTE: Neverness to Everness”预注册中，等4.23上线</div>
+</div>
+<div class="data-card up" title="songli technology co., ltd 武汉松立科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">武汉松立科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">BV · 李杰</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$128.3K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$106.8K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-pos">+$21.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-pos">+20.1%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-pos">+$270.5K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-pos">+19.3%</value></div>
+  </div>
+  <div class="dc-reason reason-up">✅ [260706] 益智游戏，广告素材扩量，整体消耗环比小幅提升</div>
+</div>
+<div class="data-card big-up" title="hainan aoyue network technology co., ltd. 海南遨阅网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">海南遨阅网络科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">BV · 南超</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$20.8K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$0</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$20.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+100.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$261.3K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+100.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</div>
+</div>
+<div class="data-card big-up" title="changde xinhui engineering management co., ltd. 常德欣辉工程管理有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">常德欣辉工程管理有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$22.8K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$2.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$20.7K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+1025.1%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$260.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+969.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</div>
+</div>
+<div class="data-card big-up" title="chengdu touchstone software development co., ltd. 成都试金石软件开发有限责任公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">成都试金石软件开发有限责任公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · Nguyen Nhu</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$51.4K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$32.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$19.2K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+59.7%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$241.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+57.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div>
+<div class="data-card big-up" title="henan lingding e-commerce co., ltd. 河南领顶电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">河南领顶电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$50.4K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$31.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$19.2K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+61.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$241.4K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+59.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260427] 有新剧目，在增加素材测试</div>
+</div>
+<div class="data-card big-up" title="shanghai ruogu technology co.ltd 上海若古信息科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海若古信息科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 陈娟</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$29.4K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$10.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$18.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+170.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$232.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+158.8%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div>
+<div class="data-card big-up" title="changde sanhao automobile service co., ltd. 常德市叁号汽车服务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">常德市叁号汽车服务有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$21.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$3.1K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$18.4K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+590.3%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$231.6K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+570.5%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</div>
+</div>
+<div class="data-card big-up" title="jiang yin qiao yun wang luo ke ji you xian gong si 江阴巧云网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">江阴巧云网络科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$39.3K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$23.1K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$16.1K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+69.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$202.6K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+66.2%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260420] 游戏“天龍八部2：血戰江湖”新上线投放</div>
+</div>
+<div class="data-card big-up" title="hefei guanshui garment trading co., ltd. 合肥莞水服装商有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">合肥莞水服装商有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · Nguyen Nhu</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$19.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$4.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$14.6K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+295.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$183.3K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+281.8%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div></div>
+</div><hr class="divider"><div class="section" id="tier-5">
+  <div class="section-title">
+    <div class="tag teal">🎯 Group 5</div>
+    <h2>Targeted Accelerate</h2>
+    <div class="tier-stats">
+      <div class="tstat"><div class="pct-pos" style="font-size:1.6rem;font-weight:700">+$10.0K</div><div class="tstat-l">WOW</div></div>
+      <div class="tstat"><div class="pct-pos" style="font-size:1.6rem;font-weight:700">+0.2%</div><div class="tstat-l">WOW%</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700">$4.75M</div><div class="tstat-l">本周消耗</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700;color:var(--teal)">15</div><div class="tstat-l">入选主体</div></div>
+    </div>
+  </div>
+  <div class="data-grid"><div class="data-card big-up" title="chong qing ying sen dian zi shang wu you xian gong si 重庆应森电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">重庆应森电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 姜彩霞</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$135.6K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$68.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$67.6K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+99.3%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$849.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+93.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260518] 短剧客户，回收较好</div>
+</div>
+<div class="data-card big-up" title="shanghai shanke robot co., ltd 上海山科机器人有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海山科机器人有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span></div>
+    </div>
+    <span class="dc-vertical v-BRANDING">BRANDING</span>
+  </div>
+  <div class="dc-meta">TMT · BVT</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$77.3K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$37.3K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$40.0K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+107.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$503.0K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+103.3%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260427] 割草机，客户持续加预算中，4月预算是 3月的 1.5 倍</div>
+</div>
+<div class="data-card big-up" title="sweetnight 广东甜秘密创新技术有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广东甜秘密创新技术有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$109.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$82.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$27.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+33.2%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$343.4K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+31.8%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260601] 货备好了加大投放</div>
+</div>
+<div class="data-card up" title="songli technology co., ltd 武汉松立科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">武汉松立科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">BV · 李杰</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$128.3K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$106.8K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-pos">+$21.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-pos">+20.1%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-pos">+$270.5K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-pos">+19.3%</value></div>
+  </div>
+  <div class="dc-reason reason-up">✅ [260706] 益智游戏，广告素材扩量，整体消耗环比小幅提升</div>
+</div>
+<div class="data-card up" title="wuxi tiantian xiangshang cultural media co., ltd 无锡天天向上文化传媒有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">无锡天天向上文化传媒有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$47.4K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$37.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-pos">+$10.4K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-pos">+28.2%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-pos">+$131.0K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-pos">+27.0%</value></div>
+  </div>
+  <div class="dc-reason reason-up">✅ [260202] 新产品涨量</div>
+</div>
+<div class="data-card big-up" title="guangzhou xingchi interactive technology co., ltd. 广州星炽互动科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广州星炽互动科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-hist-lv">🔵 历史绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$11.4K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$1.4K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$10.0K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+725.9%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$125.5K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+672.4%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260413] 사상 최악의 주령 韩国大推</div>
+</div>
+<div class="data-card big-up" title="qiaoshanshan trading co., ltd. in bayannur city 巴彦淖尔市乔珊珊商贸有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">巴彦淖尔市乔珊珊商贸有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 刘宇航</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$28.0K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$18.4K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$9.6K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+52.5%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$121.2K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+50.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 [高潜客户] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="pplingo pte ltd 武汉皮皮外语网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">武汉皮皮外语网络科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 李杰</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$25.9K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$18.4K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$7.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+40.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$93.9K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+38.4%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260427] 客户最近cac 控制不太严格可以适当放量</div>
+</div>
+<div class="data-card big-up" title="guangzhou xinghe manman network technology co., ltd 广州市星河漫漫网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广州市星河漫漫网络科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 姜彩霞</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$10.6K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$3.3K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$7.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+219.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$91.3K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+206.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 [高潜客户] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card up" title="tianjin reading pet yisheng e-commerce co., ltd 天津读宠壹生电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">天津读宠壹生电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$50.6K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$43.3K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-pos">+$7.2K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-pos">+16.7%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-pos">+$91.1K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-pos">+16.0%</value></div>
+  </div>
+  <div class="dc-reason reason-up">✅ [260427] 有新剧目，在增加素材测试</div>
+</div>
+<div class="data-card big-up" title="zhenyu zhishan information technology (shenzhen) co., ltd 臻于至善信息技术(深圳)有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">臻于至善信息技术(深圳)有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$23.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$16.3K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$7.2K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+44.5%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$91.0K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+42.6%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [251013] 效果一般，降预算</div>
+</div>
+<div class="data-card big-up" title="guangzhou laizhe he ren network technology co., ltd 广州来者何人网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广州来者何人网络科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">Luban · 李腾</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$16.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$9.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$6.6K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+67.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$83.2K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+63.7%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 [高潜客户] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="zibo yongxinyuanzhi cnc equipment co., ltd. 石家庄九丰管业有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">石家庄九丰管业有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$9.9K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$3.4K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$6.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+189.5%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$81.1K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+184.1%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260413] 黑五-保健品，投放效果好，增加素材投放</div>
+</div>
+<div class="data-card up" title="guangzhou le play interactive advertising co., ltd 广州乐玩互动广告有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广州乐玩互动广告有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">BV · 陈俊杰</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$39.6K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$33.1K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-pos">+$6.4K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-pos">+19.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-pos">+$22.7K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-pos">+5.2%</value></div>
+  </div>
+  <div class="dc-reason reason-up">✅ [260601] Immortal Destiny: Chosen Heirs（RPG游戏）泰国地区上线推广，预算增加，产品增量</div>
+</div>
+<div class="data-card big-up" title="chong qing guang yi dian zi shang wu you xian gong si 重庆广毅电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">重庆广毅电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-teal">🎯 高潜</span><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 姜彩霞</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$22.7K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$17.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$5.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+33.9%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$72.3K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+32.6%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260427] 绿通主体，政策支持</div>
+</div></div>
+</div><hr class="divider"><div class="section" id="tier-6">
+  <div class="section-title">
+    <div class="tag blue">⭐ Group 6</div>
+    <h2>Reseller Pro</h2>
+    <div class="tier-stats">
+      <div class="tstat"><div class="pct-neg" style="font-size:1.6rem;font-weight:700">$-122.5K</div><div class="tstat-l">WOW</div></div>
+      <div class="tstat"><div class="pct-neg" style="font-size:1.6rem;font-weight:700">-4.6%</div><div class="tstat-l">WOW%</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700">$2.56M</div><div class="tstat-l">本周消耗</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700;color:var(--blue)">15</div><div class="tstat-l">入选主体</div></div>
+    </div>
+  </div>
+  <div class="data-grid"><div class="data-card big-down" title="hefei zhengban e-commerce co., ltd 义乌市三核电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">义乌市三核电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$66.9K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$108.3K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-41.4K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-38.2%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-520.0K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-36.3%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">↔️ [260706] 制冷机产品夏季旺季，新批次广告快速起量，整体消耗环比大幅提升</div>
+</div>
+<div class="data-card big-down" title="zhenyan network technology (shanghai) co., ltd 榛言网络科技（上海）有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">榛言网络科技（上海）有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$27.8K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$45.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-18.0K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-39.3%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-226.9K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-37.6%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">↔️ [260608] MaxNovel东南亚大推</div>
+</div>
+<div class="data-card big-down" title="sunborn network technology limited 上海散爆网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海散爆网络科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$2.1K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$17.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-14.9K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-87.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-186.9K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-83.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">✅ [260330] GIRLS\' FRONTLINE 2: EXILIUM 美国大推结束</div>
+</div>
+<div class="data-card down" title="hainan youju technology co., ltd. 海南优矩科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">海南优矩科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$25.4K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$35.5K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-neg">$-10.1K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-neg">-28.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-neg">$-127.6K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-neg">-27.5%</value></div>
+  </div>
+  <div class="dc-reason reason-down">✅ [260706] 短剧产品“ChillShorts - Popular Short Dramas”投放效果不理想，关闭了效果不好的广告，同时新增了素材测试投放</div>
+</div>
+<div class="data-card down" title="kandao technology co., ltd. 深圳津渡生物医学科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">深圳津渡生物医学科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">TMT · BVT</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$30.2K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$39.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-neg">$-8.9K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-neg">-22.7%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-neg">$-111.5K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-neg">-21.8%</value></div>
+  </div>
+  <div class="dc-reason reason-down">↔️ [260420] AI医疗产品，使用爆款素材拓不同的受众来测，近期效果不错</div>
+</div>
+<div class="data-card big-down" title="shanghai linheli pipeline accessories co., ltd 上海麟合励管道配件有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海麟合励管道配件有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">TMT · BVT</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$17.9K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$26.4K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-8.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-32.2%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-107.0K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-31.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">✅ [260706] Amazon prime day 促销结束</div>
+</div>
+<div class="data-card big-down" title="hefei yiqifu cultural technology co., ltd 合肥易启富文化科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">合肥易启富文化科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$5.6K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$12.4K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-6.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-55.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-86.1K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-51.8%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">💡 [Reseller Pro] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP买量放缓，可能处于测试间歇期或ROI优化阶段。</div>
+</div>
+<div class="data-card big-down" title="changlvzhubao 四会市常绿珠宝店（个体工商户）">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">四会市常绿珠宝店（个体工商户）</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">Luban · 李腾</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$1.2K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$7.7K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-6.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-84.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-81.3K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-80.8%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">💡 [Reseller Pro] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC广告预算调整或促销周期结束，消耗有所收缩。</div>
+</div>
+<div class="data-card big-down" title="zibo guangwei e-commerce co., ltd. 淄博广为电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">淄博广为电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$10.2K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$16.5K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-6.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-38.2%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-79.2K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-36.2%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">💡 [Reseller Pro/绿通权益] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC广告预算调整或促销周期结束，消耗有所收缩。</div>
+</div>
+<div class="data-card big-down" title="yiwu yuwei e-commerce co., ltd. 义乌市渔玮电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">义乌市渔玮电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-hist-gp">📌 历史高潜</span><span class="badge bdg-hist-lv">🔵 历史绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 姜彩霞</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$8.1K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$13.5K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-5.4K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-40.1%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-68.2K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-38.4%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">↔️ [260525] 回收效果较好，预算增加</div>
+</div>
+<div class="data-card big-down" title="jining linchen cross-border e-commerce co., ltd. 济宁临宸跨境电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">济宁临宸跨境电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$10.9K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$16.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-5.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-32.8%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-66.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-32.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">✅ [260706] 电商-工艺品类，因为加购回收效果不好，关停了一部分效果差的广告，目前新上的广告处于学习期</div>
+</div>
+<div class="data-card big-down" title="wuhan mila e-commerce co., ltd 武汉米辣电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">武汉米辣电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$1.1K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$5.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-4.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-80.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-37.5K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-67.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">💡 [Reseller Pro] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP买量放缓，可能处于测试间歇期或ROI优化阶段。</div>
+</div>
+<div class="data-card big-down" title="yi chun shi ju you tong xin xi ke ji you xian ze ren gong si 伊春市聚优通信息科技有限责任公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">伊春市聚优通信息科技有限责任公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$4.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$9.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-4.6K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-50.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-58.4K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-48.5%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">💡 [Reseller Pro] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP买量放缓，可能处于测试间歇期或ROI优化阶段。</div>
+</div>
+<div class="data-card big-down" title="sun wu county jiucheng automobile trading co., ltd 孙吴县玖承汽车贸易有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">孙吴县玖承汽车贸易有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 刘宇航</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$4.0K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$8.3K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-4.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-52.2%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-54.4K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-49.4%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">↔️ [260608] 口腔护理产品素材起量，客户持续放量，整体消耗增长</div>
+</div>
+<div class="data-card big-down" title="重庆澄枫达文化传媒有限公司 重庆澄枫达文化传媒有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">重庆澄枫达文化传媒有限公司 重庆澄枫达文化传媒有限公…</div>
+      <div class="bdg-row"><span class="badge bdg-purple">⭐ RP</span><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-BRANDING">BRANDING</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$106</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$4.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-neg">$-3.9K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-neg">-97.3%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-neg">$-48.7K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-neg">-96.6%</value></div>
+  </div>
+  <div class="dc-reason reason-big-down">✅ [260706] bm风控，在养新的bm和账户</div>
+</div></div>
+</div><hr class="divider"><div class="section" id="tier-7">
+  <div class="section-title">
+    <div class="tag teal">🌐 Group 7</div>
+    <h2>Rest of RO</h2>
+    <div class="tier-stats">
+      <div class="tstat"><div class="pct-pos" style="font-size:1.6rem;font-weight:700">+$275.0K</div><div class="tstat-l">WOW</div></div>
+      <div class="tstat"><div class="pct-pos" style="font-size:1.6rem;font-weight:700">+1.8%</div><div class="tstat-l">WOW%</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700">$15.64M</div><div class="tstat-l">本周消耗</div></div>
+      <div class="tstat"><div style="font-size:1.6rem;font-weight:700;color:var(--teal)">15</div><div class="tstat-l">入选主体</div></div>
+    </div>
+  </div>
+  <div class="data-grid"><div class="data-card big-up" title="hangzhou tingchunyu network technology co., ltd. 杭州听春雨网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">杭州听春雨网络科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$373.0K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$50.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$322.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+643.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$3.31M</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+723.4%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260706] [绿通权益] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</div>
+</div>
+<div class="data-card big-up" title="shanghai qula technology co., ltd. 上海趣拉科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海趣拉科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$382.7K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$130.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$251.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+192.4%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$3.00M</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+170.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">⚡ 该客户投放加白真金产品。 ✅ [260706] 投放加白真金产品。[绿通权益] 当前违规率较可控，已重点沟通客户保持合规</div>
+</div>
+<div class="data-card big-up" title="guangxi haifeng e-commerce co., ltd. 广西海峰电子商务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">广西海峰电子商务有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-hist-lv">🔵 历史绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 王雅琦</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$50.3K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$15.6K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$34.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+223.5%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$437.1K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+213.5%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 [历史绿通] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="daqing fanhui technology co., ltd. 大庆市凡辉科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">大庆市凡辉科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$40.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$6.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$34.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+572.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$433.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+532.7%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div>
+<div class="data-card big-up" title="daqing liumin technology co., ltd. 大庆市流珉科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">大庆市流珉科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 赵畅</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$54.8K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$22.8K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$32.1K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+140.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$402.9K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+132.1%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div>
+<div class="data-card up" title="ningbo jiandao health technology co., ltd. 宁波健道健康科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">宁波健道健康科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">BV · 王凡</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$153.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$123.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-pos">+$30.3K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-pos">+24.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-pos">+$380.6K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-pos">+23.4%</value></div>
+  </div>
+  <div class="dc-reason reason-up">✅ [260706] 产品投放效果好加量</div>
+</div>
+<div class="data-card big-up" title="shen zhen shi sha le mei mei rong mei fa you xian gong si 深圳市罗湖区博雅咨询中心">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">深圳市罗湖区博雅咨询中心</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-EC">EC</span>
+  </div>
+  <div class="dc-meta">BV · 陈娟</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$31.9K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$2.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$29.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+1472.7%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$375.2K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+1397.1%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 [绿通权益] Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 EC电商广告投入增加，或新品上线/促销节点带动消耗扩张。</div>
+</div>
+<div class="data-card big-up" title="beijing perfect world software technology co.,ltd 完美世界(北京)软件科技发展有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">完美世界(北京)软件科技发展有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span><span class="badge bdg-hist-gp">📌 历史高潜</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$29.0K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$0</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$29.0K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+100.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$365.0K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+100.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260420] 游戏“NTE: Neverness to Everness”预注册中，等4.23上线</div>
+</div>
+<div class="data-card big-up" title="hainan aoyue network technology co., ltd. 海南遨阅网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">海南遨阅网络科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">BV · 南超</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$20.8K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$0</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$20.8K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+100.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$261.3K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+100.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</div>
+</div>
+<div class="data-card big-up" title="changde xinhui engineering management co., ltd. 常德欣辉工程管理有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">常德欣辉工程管理有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$22.8K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$2.0K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$20.7K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+1025.1%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$260.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+969.9%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</div>
+</div>
+<div class="data-card big-up" title="chengdu touchstone software development co., ltd. 成都试金石软件开发有限责任公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">成都试金石软件开发有限责任公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · Nguyen Nhu</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$51.4K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$32.2K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$19.2K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+59.7%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$241.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+57.0%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div>
+<div class="data-card big-up" title="shanghai ruogu technology co.ltd 上海若古信息科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">上海若古信息科技有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · 陈娟</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$29.4K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$10.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$18.5K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+170.0%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$232.8K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+158.8%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div>
+<div class="data-card big-up" title="changde sanhao automobile service co., ltd. 常德市叁号汽车服务有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">常德市叁号汽车服务有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$21.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$3.1K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$18.4K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+590.3%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$231.6K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+570.5%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 游戏新服开启/活动上线带动投放提量，或版本更新买量冲量。</div>
+</div>
+<div class="data-card big-up" title="jiang yin qiao yun wang luo ke ji you xian gong si 江阴巧云网络科技有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">江阴巧云网络科技有限公司</div>
+      <div class="bdg-row"><span class="badge bdg-green">🟢 绿通</span></div>
+    </div>
+    <span class="dc-vertical v-GAME">GAME</span>
+  </div>
+  <div class="dc-meta">MH · madhouse-销售</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$39.3K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$23.1K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$16.1K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+69.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$202.6K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+66.2%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">✅ [260420] 游戏“天龍八部2：血戰江湖”新上线投放</div>
+</div>
+<div class="data-card big-up" title="hefei guanshui garment trading co., ltd. 合肥莞水服装商有限公司">
+  <div class="dc-header">
+    <div>
+      <div class="dc-name">合肥莞水服装商有限公司</div>
+      <div class="bdg-row"></div>
+    </div>
+    <span class="dc-vertical v-APP">APP</span>
+  </div>
+  <div class="dc-meta">BV · Nguyen Nhu</div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>本周消耗</label><value>$19.5K</value></div>
+    <div class="dc-metric"><label>上周消耗</label><value>$4.9K</value></div>
+    <div class="dc-metric"><label>WOW</label><value class="pct-big-pos">+$14.6K</value></div>
+  </div>
+  <div class="dc-metrics">
+    <div class="dc-metric"><label>WOW%</label><value class="pct-big-pos">+295.6%</value></div>
+    <div class="dc-metric"><label>RR/WOW</label><value class="pct-big-pos">+$183.3K</value></div>
+    <div class="dc-metric"><label>wowRR%</label><value class="pct-big-pos">+281.8%</value></div>
+  </div>
+  <div class="dc-reason reason-big-up">💡 Q3新季度第一周，季度消耗从零起步，环比数据受季初效应影响较大。 APP类客户加大安装量/应用推广投入，或新版本上线买量提速。</div>
+</div></div>
+</div><hr class="divider">
+
+<!-- ══════════ COVERAGE SECTION ══════════ -->
+<div class="section" id="coverage">
+  <div class="section-title">
+    <div class="tag teal">📊 入选代表性</div>
+    <h2>各层级覆盖率分析</h2>
+    <p style="color:var(--muted);font-size:.83rem;margin-top:6px">
+      入选主体 WOW 累计 ÷ 该层级目标 WOW · 越高说明入选公司越能解释本层级波动
+    </p>
+  </div>
+  <div class="cov-summary">
+    <div class="cov-stat"><div class="num amber">60</div><div class="lbl">入选主体总数</div></div>
+    <div class="cov-stat"><div class="num teal">25</div><div class="lbl">含绿通权益</div></div>
+    <div class="cov-stat"><div class="num blue">36</div><div class="lbl">有历史原因记录</div></div>
+    <div class="cov-stat"><div class="num purple">26</div><div class="lbl">历史高潜</div></div>
+    <div class="cov-stat"><div class="num amber">0</div><div class="lbl">历史直客</div></div>
+  </div>
+  <div class="cov-grid"><div class="cov-card">
+  <div class="cov-header">
+    <div class="cov-label"><span class="tag blue" style="margin:0">📊 1</span> <span style="font-size:.85rem;font-weight:600">IM (Greater China)</span></div>
+    <div class="cov-pct" style="color:var(--teal)">✅ 140%</div>
+  </div>
+  <div class="cov-bar-track"><div class="cov-bar-fill" style="width:70.15998266100104%;background:var(--teal)"></div></div>
+  <div class="cov-meta">
+    <span>入选 2 家 | WOW累计 <b>-760.7K</b></span>
+    <span>目标 <b>-542.1K</b></span>
+  </div>
+  
+</div>
+<div class="cov-card">
+  <div class="cov-header">
+    <div class="cov-label"><span class="tag purple" style="margin:0">📈 2</span> <span style="font-size:.85rem;font-weight:600">MM (AM-Greater China)</span></div>
+    <div class="cov-pct" style="color:var(--teal)">✅ 148%</div>
+  </div>
+  <div class="cov-bar-track"><div class="cov-bar-fill" style="width:73.94387824974987%;background:var(--teal)"></div></div>
+  <div class="cov-meta">
+    <span>入选 2 家 | WOW累计 <b>-1.19M</b></span>
+    <span>目标 <b>-804.8K</b></span>
+  </div>
+  
+</div>
+<div class="cov-card">
+  <div class="cov-header">
+    <div class="cov-label"><span class="tag amber" style="margin:0">🛒 3</span> <span style="font-size:.85rem;font-weight:600">RO-EC (EC/CPG/Retail)</span></div>
+    <div class="cov-pct" style="color:var(--teal)">✅ 264%</div>
+  </div>
+  <div class="cov-bar-track"><div class="cov-bar-fill" style="width:100.0%;background:var(--teal)"></div></div>
+  <div class="cov-meta">
+    <span>入选 15 家 | WOW累计 <b>+340.0K</b></span>
+    <span>目标 <b>+128.7K</b></span>
+  </div>
+  
+</div>
+<div class="cov-card">
+  <div class="cov-header">
+    <div class="cov-label"><span class="tag purple" style="margin:0">🎮 4</span> <span style="font-size:.85rem;font-weight:600">RO-Apps & Game (Non-EC)</span></div>
+    <div class="cov-pct" style="color:var(--teal)">✅ 49818%</div>
+  </div>
+  <div class="cov-bar-track"><div class="cov-bar-fill" style="width:100.0%;background:var(--teal)"></div></div>
+  <div class="cov-meta">
+    <span>入选 15 家 | WOW累计 <b>+869.6K</b></span>
+    <span>目标 <b>+1.7K</b></span>
+  </div>
+  
+</div>
+<div class="cov-card">
+  <div class="cov-header">
+    <div class="cov-label"><span class="tag teal" style="margin:0">🎯 5</span> <span style="font-size:.85rem;font-weight:600">Targeted Accelerate</span></div>
+    <div class="cov-pct" style="color:var(--teal)">✅ 2415%</div>
+  </div>
+  <div class="cov-bar-track"><div class="cov-bar-fill" style="width:100.0%;background:var(--teal)"></div></div>
+  <div class="cov-meta">
+    <span>入选 15 家 | WOW累计 <b>+241.0K</b></span>
+    <span>目标 <b>+10.0K</b></span>
+  </div>
+  
+</div>
+<div class="cov-card">
+  <div class="cov-header">
+    <div class="cov-label"><span class="tag blue" style="margin:0">⭐ 6</span> <span style="font-size:.85rem;font-weight:600">Reseller Pro</span></div>
+    <div class="cov-pct" style="color:var(--teal)">✅ 122%</div>
+  </div>
+  <div class="cov-bar-track"><div class="cov-bar-fill" style="width:61.13785098499721%;background:var(--teal)"></div></div>
+  <div class="cov-meta">
+    <span>入选 15 家 | WOW累计 <b>-149.8K</b></span>
+    <span>目标 <b>-122.5K</b></span>
+  </div>
+  
+</div>
+<div class="cov-card">
+  <div class="cov-header">
+    <div class="cov-label"><span class="tag teal" style="margin:0">🌐 7</span> <span style="font-size:.85rem;font-weight:600">Rest of RO</span></div>
+    <div class="cov-pct" style="color:var(--teal)">✅ 325%</div>
+  </div>
+  <div class="cov-bar-track"><div class="cov-bar-fill" style="width:100.0%;background:var(--teal)"></div></div>
+  <div class="cov-meta">
+    <span>入选 15 家 | WOW累计 <b>+893.5K</b></span>
+    <span>目标 <b>+275.0K</b></span>
+  </div>
+  
+</div></div>
+  <div style="margin-top:24px;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:16px 20px;font-size:.8rem;color:var(--muted)">
+    <b style="color:var(--text)">覆盖率说明：</b>
+    覆盖率 ≥80% ✅ 代表性强 · 40-79% ⚠️ 中等代表性 · &lt;40% 🔴 波动分散（尤其 RO-EC 属正常数据现象，WOW 由大量小幅主体贡献）。
+    历史原因优先展示与本周方向一致的最近记录；无记录时由模型根据 vertical、权益标签及 Q3 季初背景自动推测。
+  </div>
+</div>
+
+<footer>
+  大盘账单周度分析看板 · W0711 · 由 Claude Code 自动生成<br>
+  数据来源：系统账单 · 高潜及PRO客户标签 · 绿通权益名单 · 三份历史波动原因文件（1627个主体记录）
+</footer>
+</body>
+</html>
