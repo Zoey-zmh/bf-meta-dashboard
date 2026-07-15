@@ -59,7 +59,7 @@ body{font-family:'Microsoft YaHei',sans-serif;background:#0f1117;color:#e2e8f0;m
     <!-- ── 账户运营团队固定卡片（由脚本维护，请勿手动修改）── -->
     <div class="section-label">账户运营团队</div>
     <div class="cards owner-cards">
-      <a class="entry-card" href="/analysis.html">
+      <a class="entry-card" href="analysis.html">
         <div class="icon">📈</div>
         <h2>Meta 大盘分析</h2>
         <div class="desc">周度大盘账单分析报告，含总表、分层波动、TOP波动及最终汇总，可视化数据看板。</div>
@@ -68,7 +68,7 @@ body{font-family:'Microsoft YaHei',sans-serif;background:#0f1117;color:#e2e8f0;m
           <span class="go">进入 →</span>
         </div>
       </a>
-      <a class="entry-card" href="/quota.html">
+      <a class="entry-card" href="quota.html">
         <div class="icon">🗂️</div>
         <h2>Meta 账户余量监测</h2>
         <div class="desc">各团队账户名额分配与使用情况追踪，支持周次切换、销售明细展开及 Excel 下载。</div>
@@ -107,14 +107,14 @@ async function checkPwd() {
   }
 }
 function loadTeamCards() {
-  fetch('/cards/cards.json?t=' + Date.now())
+  fetch('cards/cards.json?t=' + Date.now())
     .then(r => r.json()).then(cards => {
       if (!cards || !cards.length) return;
       const wrap = document.getElementById('team-cards-wrap');
       const grid = document.getElementById('team-cards');
       wrap.style.display = '';
       grid.innerHTML = cards.map(c => `
-        <a class="entry-card" href="${c.url}">
+        <a class="entry-card" href="${c.url.replace(/^\//,'')}">
           <div class="icon">${c.icon||'📋'}</div>
           <h2>${c.title}</h2>
           <div class="desc">${c.desc||''}</div>
