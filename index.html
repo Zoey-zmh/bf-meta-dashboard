@@ -33,6 +33,7 @@ body{font-family:'Microsoft YaHei',sans-serif;background:#0f1117;color:#e2e8f0;m
 .entry-card .meta{font-size:11px;color:#4a5568;border-top:1px solid #2d3748;padding-top:14px;display:flex;justify-content:space-between}
 .entry-card .go{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#3b5bdb,#4c6ef5);color:#fff;font-size:12px;font-weight:600;padding:8px 18px;border-radius:20px;transition:opacity .15s}
 .entry-card:hover .go{opacity:.88}
+.section-label{font-size:11px;font-weight:700;color:#4a5568;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;margin-top:8px}
 .footer{text-align:center;padding:20px;font-size:11px;color:#2d3748}
 @media(max-width:600px){.cards{grid-template-columns:1fr}.header{padding:18px 20px}.main{padding:28px 16px}}
 </style>
@@ -54,25 +55,34 @@ body{font-family:'Microsoft YaHei',sans-serif;background:#0f1117;color:#e2e8f0;m
   <div class="sub">BlueFocus Meta · 账户运营团队</div>
 </div>
 <div class="main">
-  <div class="cards">
-    <a class="entry-card" href="/analysis.html">
-      <div class="icon">📈</div>
-      <h2>Meta 大盘分析</h2>
-      <div class="desc">周度大盘账单分析报告，含总表、分层波动、TOP波动及最终汇总，可视化数据看板。</div>
-      <div class="meta">
-        <span>最新数据：0711</span>
-        <span class="go">进入 →</span>
-      </div>
-    </a>
-    <a class="entry-card" href="/quota.html">
-      <div class="icon">🗂️</div>
-      <h2>Meta 账户余量监测</h2>
-      <div class="desc">各团队账户名额分配与使用情况追踪，支持周次切换、销售明细展开及 Excel 下载。</div>
-      <div class="meta">
-        <span>最新数据：0711</span>
-        <span class="go">进入 →</span>
-      </div>
-    </a>
+  <div id="all-cards">
+    <!-- ── 账户运营团队固定卡片（由脚本维护，请勿手动修改）── -->
+    <div class="section-label">账户运营团队</div>
+    <div class="cards owner-cards">
+      <a class="entry-card" href="/analysis.html">
+        <div class="icon">📈</div>
+        <h2>Meta 大盘分析</h2>
+        <div class="desc">周度大盘账单分析报告，含总表、分层波动、TOP波动及最终汇总，可视化数据看板。</div>
+        <div class="meta">
+          <span>最新数据：0711</span>
+          <span class="go">进入 →</span>
+        </div>
+      </a>
+      <a class="entry-card" href="/quota.html">
+        <div class="icon">🗂️</div>
+        <h2>Meta 账户余量监测</h2>
+        <div class="desc">各团队账户名额分配与使用情况追踪，支持周次切换、销售明细展开及 Excel 下载。</div>
+        <div class="meta">
+          <span>最新数据：0711</span>
+          <span class="go">进入 →</span>
+        </div>
+      </a>
+    </div>
+    <!-- ── 团队其他成员卡片（从 cards/cards.json 动态加载）── -->
+    <div id="team-cards-wrap" style="display:none">
+      <div class="section-label">团队成员</div>
+      <div class="cards" id="team-cards"></div>
+    </div>
   </div>
 </div>
 <div class="footer">账户运营团队 · 每周更新</div>
@@ -88,6 +98,7 @@ async function checkPwd() {
   if (h === HASH) {
     localStorage.setItem(KEY, '1');
     document.getElementById('pwd-gate').style.display = 'none';
+    loadTeamCards();
   } else {
     const e = document.getElementById('pwd-err');
     e.textContent = '密码错误，请重试';
@@ -95,7 +106,29 @@ async function checkPwd() {
     document.getElementById('pwd-input').value = '';
   }
 }
-if (localStorage.getItem(KEY) === '1') document.getElementById('pwd-gate').style.display = 'none';
+function loadTeamCards() {
+  fetch('/cards/cards.json?t=' + Date.now())
+    .then(r => r.json()).then(cards => {
+      if (!cards || !cards.length) return;
+      const wrap = document.getElementById('team-cards-wrap');
+      const grid = document.getElementById('team-cards');
+      wrap.style.display = '';
+      grid.innerHTML = cards.map(c => `
+        <a class="entry-card" href="${c.url}">
+          <div class="icon">${c.icon||'📋'}</div>
+          <h2>${c.title}</h2>
+          <div class="desc">${c.desc||''}</div>
+          <div class="meta">
+            <span>最新数据：${c.date||'—'}</span>
+            <span class="go">进入 →</span>
+          </div>
+        </a>`).join('');
+    }).catch(() => {});
+}
+if (localStorage.getItem(KEY) === '1') {
+  document.getElementById('pwd-gate').style.display = 'none';
+  loadTeamCards();
+}
 </script>
 </body>
 </html>
