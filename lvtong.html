@@ -1,0 +1,191 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><title>绿通周波动看板 0808</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0e1117;color:#e6edf3;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;padding:28px 34px}
+h1{font-size:24px;font-weight:700;margin-bottom:2px}
+.sub{color:#8b949e;font-size:13px;margin-bottom:22px}
+.kpis{display:flex;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+.kpi{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:16px 20px;min-width:160px}
+.kpi .l{color:#8b949e;font-size:12px;margin-bottom:6px}
+.kpi .v{font-size:24px;font-weight:700}
+.kpi .d{font-size:12px;margin-top:4px}
+.up{color:#3fb950} .down{color:#f85149} .flat{color:#8b949e} .drop{color:#f0883e} .zk{color:#a371f7}
+.sec{font-size:16px;font-weight:600;margin:24px 0 14px;padding-left:10px;border-left:3px solid #58a6ff}
+.cards{display:flex;gap:14px;flex-wrap:wrap}
+.card{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:16px;width:250px}
+.card-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.bu{font-size:18px;font-weight:700;color:#58a6ff} .cnt{color:#8b949e;font-size:13px}
+.brow{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:12px}
+.bl{width:28px;color:#8b949e} .bar{flex:1;background:#21262d;border-radius:4px;height:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:#388bfd} .bar.b7 i{background:#3fb950}
+.bv{width:70px;text-align:right;color:#c9d1d9}
+.wow{margin-top:10px;font-size:13px;font-weight:600}
+table{width:100%;border-collapse:collapse;background:#161b22;border:1px solid #21262d;border-radius:10px;overflow:hidden;font-size:13px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid #21262d}
+th{background:#1c2129;color:#8b949e;font-weight:600}
+.rt{text-align:right;font-variant-numeric:tabular-nums} .nm{max-width:340px}
+.rsn{color:#d29922;max-width:300px} .norsn{color:#484f58}
+tr.tot td{background:#1a2029;font-weight:700}
+.two{display:flex;gap:20px;flex-wrap:wrap} .two>div{flex:1;min-width:520px}
+.half{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start} .half>div{flex:1;min-width:380px}
+.qwrap{display:flex;gap:18px;align-items:flex-end;background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px 24px;height:230px}
+.qcol{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;flex:1}
+.qbar{width:46px;background:linear-gradient(#58a6ff,#388bfd);border-radius:5px 5px 0 0}
+.qv{font-size:12px;margin-top:6px;color:#c9d1d9} .ql{font-size:12px;color:#8b949e;margin-top:2px}
+.note{color:#8b949e;font-size:12px;margin-top:22px;line-height:1.7}
+.dropbu{font-size:12px;color:#8b949e;margin-top:6px}
+</style></head><body>
+<h1>绿通周波动看板 · 0808</h1>
+<div class="sub">数据源：绿通周波动数据-0808.xlsx · 波动原因：2026 绿通主体数据监测.xlsx（15 家已标注）· 对比口径：7天平均日耗 vs 28天平均日耗</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="l">活跃绿通主体</div><div class="v">137</div><div class="d flat">MH 68 · BV 48 · Luban 12 · TMT 9</div></div>
+  <div class="kpi"><div class="l">Drop 客户数</div><div class="v drop">82</div><div class="d drop">BV 46 · MH 27 · Luban 6 · TMT 3</div></div>
+  <div class="kpi"><div class="l">变为直客的绿通</div><div class="v zk">23</div><div class="d zk">BV 14 · MH 5 · Luban 4 · TMT 0</div></div>
+  <div class="kpi"><div class="l">28天平均日耗合计</div><div class="v">520,318</div></div>
+  <div class="kpi"><div class="l">7天平均日耗合计</div><div class="v">533,820</div></div>
+  <div class="kpi"><div class="l">周波动 WOW</div><div class="v up">▲ 13,502</div><div class="d up">+2.6%</div></div>
+</div>
+
+<div class="sec">汇总（各 BU 绿通消耗与单客户消耗）</div>
+<table>
+<tr><th>口径</th><th class="rt">绿通客户数</th><th class="rt">28天平均日耗</th><th class="rt">7天平均日耗</th><th class="rt">WOW%</th><th class="rt">单客户28天</th><th class="rt">单客户7天</th></tr>
+<tr class="tot"><td>传媒整体</td><td class="rt">137</td>
+      <td class="rt">520,318</td><td class="rt">533,820</td>
+      <td class="rt up">+2.6%</td>
+      <td class="rt">3,798</td><td class="rt">3,896</td></tr><tr><td>MH</td><td class="rt">68</td>
+      <td class="rt">217,121</td><td class="rt">232,647</td>
+      <td class="rt up">+7.2%</td>
+      <td class="rt">3,193</td><td class="rt">3,421</td></tr><tr><td>BV</td><td class="rt">48</td>
+      <td class="rt">161,634</td><td class="rt">157,686</td>
+      <td class="rt down">-2.4%</td>
+      <td class="rt">3,367</td><td class="rt">3,285</td></tr><tr><td>Luban</td><td class="rt">12</td>
+      <td class="rt">7,882</td><td class="rt">12,573</td>
+      <td class="rt up">+59.5%</td>
+      <td class="rt">657</td><td class="rt">1,048</td></tr><tr><td>TMT</td><td class="rt">9</td>
+      <td class="rt">133,680</td><td class="rt">130,914</td>
+      <td class="rt down">-2.1%</td>
+      <td class="rt">14,853</td><td class="rt">14,546</td></tr>
+</table>
+
+<div class="sec">各 BU 绿通消耗（28天 vs 7天 平均日耗）</div>
+<div class="cards"><div class="card">
+      <div class="card-h"><span class="bu">MH</span><span class="cnt">68 家</span></div>
+      <div class="bars">
+        <div class="brow"><span class="bl">28天</span><div class="bar"><i style="width:100%"></i></div><span class="bv">217,121</span></div>
+        <div class="brow"><span class="bl">7天</span><div class="bar b7"><i style="width:107%"></i></div><span class="bv">232,647</span></div>
+      </div>
+      <div class="wow up">▲ WOW 15,525 (+7.2%)</div>
+    </div><div class="card">
+      <div class="card-h"><span class="bu">BV</span><span class="cnt">48 家</span></div>
+      <div class="bars">
+        <div class="brow"><span class="bl">28天</span><div class="bar"><i style="width:74%"></i></div><span class="bv">161,634</span></div>
+        <div class="brow"><span class="bl">7天</span><div class="bar b7"><i style="width:72%"></i></div><span class="bv">157,686</span></div>
+      </div>
+      <div class="wow down">▼ WOW -3,948 (-2.4%)</div>
+    </div><div class="card">
+      <div class="card-h"><span class="bu">Luban</span><span class="cnt">12 家</span></div>
+      <div class="bars">
+        <div class="brow"><span class="bl">28天</span><div class="bar"><i style="width:3%"></i></div><span class="bv">7,882</span></div>
+        <div class="brow"><span class="bl">7天</span><div class="bar b7"><i style="width:5%"></i></div><span class="bv">12,573</span></div>
+      </div>
+      <div class="wow up">▲ WOW 4,691 (+59.5%)</div>
+    </div><div class="card">
+      <div class="card-h"><span class="bu">TMT</span><span class="cnt">9 家</span></div>
+      <div class="bars">
+        <div class="brow"><span class="bl">28天</span><div class="bar"><i style="width:61%"></i></div><span class="bv">133,680</span></div>
+        <div class="brow"><span class="bl">7天</span><div class="bar b7"><i style="width:60%"></i></div><span class="bv">130,914</span></div>
+      </div>
+      <div class="wow down">▼ WOW -2,766 (-2.1%)</div>
+    </div></div>
+
+<div class="sec">Q3 与 Q2 数据 QoQ（按生效季度 · L7DRR 0808 / Q2-QTD / QoQ%）</div>
+<div class="half">
+  <div><table><tr><th>生效季度</th><th class="rt">L7DRR(0808)</th><th class="rt">Q2-QTD</th><th class="rt">QoQ%</th></tr><tr><td>25H1</td><td class="rt">6,704,926</td><td class="rt">7,207,019</td><td class="rt down">-7.0%</td></tr><tr><td>25Q3</td><td class="rt">3,076,186</td><td class="rt">4,953,995</td><td class="rt down">-37.9%</td></tr><tr><td>25Q4</td><td class="rt">15,824,228</td><td class="rt">16,188,608</td><td class="rt down">-2.3%</td></tr><tr><td>26H1</td><td class="rt">18,084,812</td><td class="rt">19,314,403</td><td class="rt down">-6.4%</td></tr><tr><td>26Q3</td><td class="rt">4,418,452</td><td class="rt">812,520</td><td class="rt up">+443.8%</td></tr><tr class="tot"><td>Total</td><td class="rt">48,108,605</td><td class="rt">48,476,544</td><td class="rt down">-0.8%</td></tr></table></div>
+  <div><div class="qwrap"><div class="qcol"><div class="qbar" style="height:59px"></div>
+   <div class="qv">7.2M</div><div class="ql">25H1</div></div><div class="qcol"><div class="qbar" style="height:41px"></div>
+   <div class="qv">5.0M</div><div class="ql">25Q3</div></div><div class="qcol"><div class="qbar" style="height:134px"></div>
+   <div class="qv">16.2M</div><div class="ql">25Q4</div></div><div class="qcol"><div class="qbar" style="height:160px"></div>
+   <div class="qv">19.3M</div><div class="ql">26H1</div></div><div class="qcol"><div class="qbar" style="height:6px"></div>
+   <div class="qv">0.8M</div><div class="ql">26Q3</div></div></div></div>
+</div>
+
+<div class="sec">🔄 变为直客的绿通共 23 家（BV 14 · MH 5 · Luban 4 · TMT 0）</div>
+
+<div class="two">
+  <div>
+    <div class="sec">📈 Top 上涨主体（按 L7DRR 环比）</div>
+    <table><tr><th>合并主体</th><th>BU</th><th class="rt">28天日均波动%</th><th class="rt">L7DRR波动%</th><th>波动原因</th></tr><tr><td class="nm">安阳艺如装饰装修有限公司</td><td>BV</td>
+          <td class="rt up">▲ +1768.0%</td><td class="rt up">▲ +1695.2%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">beijing hezhongxing technology co., ltd. 北京合众行科技有限公司</td><td>Luban</td>
+          <td class="rt up">▲ +406.8%</td><td class="rt up">▲ +877.2%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">ascendant technology holdings company limited 深圳市奇光电子科技有限公司</td><td>MH</td>
+          <td class="rt up">▲ +166.7%</td><td class="rt up">▲ +340.5%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">xiamen dianchu technology co., ltd 厦门点触科技股份有限公司</td><td>MH</td>
+          <td class="rt up">▲ +93.4%</td><td class="rt up">▲ +191.2%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">hainanlanyewenhuachuanmeiyouxiangongsi 海南岚夜文化传媒有限公司</td><td>MH</td>
+          <td class="rt up">▲ +20.4%</td><td class="rt up">▲ +108.4%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">guang zhou yin jiao shang mao you xian gong si 广州殷角商贸有限公司</td><td>MH</td>
+          <td class="rt down">▼ -8.2%</td><td class="rt up">▲ +75.6%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">hengshui zewen e-commerce co., ltd. 衡水泽文电子商务有限公司</td><td>BV</td>
+          <td class="rt up">▲ +34.5%</td><td class="rt up">▲ +68.9%</td>
+          <td class="rsn">效果不佳，回收一部分预算</td></tr><tr><td class="nm">hefei lelan e-commerce co., ltd 合肥乐澜电子商务有限公司</td><td>BV</td>
+          <td class="rt down">▼ -13.7%</td><td class="rt up">▲ +68.7%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">pplingo pte ltd 武汉皮皮外语网络科技有限公司</td><td>BV</td>
+          <td class="rt down">▼ -0.2%</td><td class="rt up">▲ +53.8%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">bei jing ling gan shi ke ke ji you xian gong si 北京灵感时刻科技有限公司</td><td>TMT</td>
+          <td class="rt up">▲ +114.9%</td><td class="rt up">▲ +48.7%</td>
+          <td class="rsn">有活动，同时有投放策略调整</td></tr><tr><td class="nm">shanghai style information technology co., ltd 上海平弦云科技有限公司</td><td>BV</td>
+          <td class="rt up">▲ +22.7%</td><td class="rt up">▲ +47.3%</td>
+          <td class="rsn">政策优势，上量</td></tr><tr><td class="nm">shandong guoxiao construction labor service co., ltd 山东国晓建筑劳务有限公司</td><td>BV</td>
+          <td class="rt down">▼ -6.5%</td><td class="rt up">▲ +38.2%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">bei jing xin lian hu tong xin xi ji shu you xian gong si 北京心连互通信息技术有限公司</td><td>BV</td>
+          <td class="rt up">▲ +2.7%</td><td class="rt up">▲ +37.8%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">jining linchen cross-border e-commerce co., ltd. 济宁临宸跨境电子商务有限公司</td><td>MH</td>
+          <td class="rt down">▼ -3.6%</td><td class="rt up">▲ +21.3%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">重庆澄枫达文化传媒有限公司 重庆澄枫达文化传媒有限公司</td><td>MH</td>
+          <td class="rt up">▲ +40.5%</td><td class="rt up">▲ +20.6%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr></table>
+  </div>
+  <div>
+    <div class="sec">📉 Top 下滑主体（按 L7DRR 环比）</div>
+    <table><tr><th>合并主体</th><th>BU</th><th class="rt">28天日均波动%</th><th class="rt">L7DRR波动%</th><th>波动原因</th></tr><tr><td class="nm">suzhou lian da chi e-commerce co., ltd. 苏州连大驰电子商务有限公司</td><td>BV</td>
+          <td class="rt down">▼ -6.4%</td><td class="rt down">▼ -64.7%</td>
+          <td class="rsn">启动数据差，回收一下</td></tr><tr><td class="nm">beijing dashengshuyu kejiyouxiangongsi 北京大晟数娱科技有限公司</td><td>MH</td>
+          <td class="rt down">▼ -22.7%</td><td class="rt down">▼ -56.6%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">guangzhou youwei information technology co., ltd. 广州宥威有威信息科技有限公司</td><td>MH</td>
+          <td class="rt down">▼ -6.5%</td><td class="rt down">▼ -51.9%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">qingxian intelligent innovation (shenzhen) co., ltd. 清闲智能创新（深圳）有限公司</td><td>BV</td>
+          <td class="rt down">▼ -20.9%</td><td class="rt down">▼ -42.3%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">guangzhou shouzhi network technology co., ltd. 1 广州聚玩文化科技有限公司</td><td>BV</td>
+          <td class="rt down">▼ -46.2%</td><td class="rt down">▼ -42.1%</td>
+          <td class="rsn">游戏客户，回收波动</td></tr><tr><td class="nm">zhenyan network technology (shanghai) co., ltd 榛言网络科技（上海）有限公司</td><td>MH</td>
+          <td class="rt down">▼ -26.1%</td><td class="rt down">▼ -37.8%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">dancheng county zilei e-commerce co., ltd. 郸城县子雷电子商务有限公司</td><td>MH</td>
+          <td class="rt down">▼ -45.2%</td><td class="rt down">▼ -37.5%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">hang zhou bing bi wen hua chuan mei you xian gong si 杭州秉笔文化传媒有限公司</td><td>MH</td>
+          <td class="rt down">▼ -13.4%</td><td class="rt down">▼ -30.7%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">石家庄莫萨尔电子科技有限公司</td><td>MH</td>
+          <td class="rt down">▼ -32.7%</td><td class="rt down">▼ -29.9%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">guangdong xinjia network technology co., ltd 广东信佳网络科技有限公司</td><td>BV</td>
+          <td class="rt down">▼ -14.7%</td><td class="rt down">▼ -29.3%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">rui&#x27;an sensheng e-commerce co., ltd 瑞安市森升电子商务有限公司</td><td>BV</td>
+          <td class="rt down">▼ -34.4%</td><td class="rt down">▼ -28.3%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">hainan chengyi network technology co., ltd 海南乘易网络科技有限公司</td><td>BV</td>
+          <td class="rt down">▼ -11.1%</td><td class="rt down">▼ -27.6%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">guangzhou yingdong vision technology co., ltd. 佛山市影动汇量教育咨询有限公司</td><td>BV</td>
+          <td class="rt up">▲ +11.1%</td><td class="rt down">▼ -27.3%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">wuxi tiantian xiangshang cultural media co., ltd 无锡天天向上文化传媒有限公司</td><td>MH</td>
+          <td class="rt up">▲ +5.4%</td><td class="rt down">▼ -26.3%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr><tr><td class="nm">beijing perfect world software technology co.,ltd 完美世界(北京)软件科技发展有限公司</td><td>MH</td>
+          <td class="rt down">▼ -34.7%</td><td class="rt down">▼ -26.0%</td>
+          <td class="rsn"><span class="norsn">—</span></td></tr></table>
+  </div>
+</div>
+
+<div class="note">
+口径：活跃绿通 137 家（BU 聚合与「汇总」sheet 一致）；绿通整体监测 242 家 = 活跃 160 / Drop 82。<br>
+波动口径为「近 7 天平均日耗」相对「近 28 天平均日耗」的变化（正=近期加量，负=缩量）；波动原因取自《2026 绿通主体数据监测》的 wow波动原因，按合并主体匹配（15 家已标注，未标注显示「—」）。<br>
+Q3 与 Q2 QoQ 来自《绿通周波动数据-0808》的「Q3与Q2数据QoQ」sheet。本周 0808 · 上周 。
+</div>
+</body></html>
